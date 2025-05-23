@@ -27,11 +27,17 @@
                                             <rect key="frame" x="0.0" y="0.0" width="393" height="100"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="aIa-x1-qf6">
-                                                    <rect key="frame" x="0.0" y="0.0" width="393" height="100"/>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="aIa-x1-qf6" userLabel="Cell image">
+                                                    <rect key="frame" x="16" y="4" width="361" height="92"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                            <integer key="value" value="16"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                    </userDefinedRuntimeAttributes>
                                                 </imageView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gQU-pg-AD7" userLabel="Like button">
-                                                    <rect key="frame" x="349" y="0.0" width="44" height="44"/>
+                                                    <rect key="frame" x="333" y="4" width="44" height="44"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="44" id="nMZ-7W-dIy"/>
                                                         <constraint firstAttribute="height" constant="44" id="r0V-zt-o9s"/>
@@ -40,30 +46,30 @@
                                                     <buttonConfiguration key="configuration" style="plain" image="Active"/>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="27 марта 2025" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dCP-pg-rEJ" userLabel="Date label">
-                                                    <rect key="frame" x="8" y="76" width="92" height="16"/>
+                                                    <rect key="frame" x="24" y="72" width="92" height="16"/>
                                                     <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="13"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="aIa-x1-qf6" firstAttribute="top" secondItem="IOD-uO-0aL" secondAttribute="top" id="7e4-fY-LRc"/>
-                                                <constraint firstAttribute="trailing" secondItem="aIa-x1-qf6" secondAttribute="trailing" id="H4E-Nf-eQL"/>
+                                                <constraint firstItem="aIa-x1-qf6" firstAttribute="top" secondItem="IOD-uO-0aL" secondAttribute="top" constant="4" id="7e4-fY-LRc"/>
+                                                <constraint firstAttribute="trailing" secondItem="aIa-x1-qf6" secondAttribute="trailing" constant="16" id="H4E-Nf-eQL"/>
                                                 <constraint firstItem="aIa-x1-qf6" firstAttribute="trailing" secondItem="gQU-pg-AD7" secondAttribute="trailing" id="Ks5-j0-MBJ"/>
                                                 <constraint firstItem="aIa-x1-qf6" firstAttribute="bottom" secondItem="dCP-pg-rEJ" secondAttribute="bottom" constant="8" id="VMB-Yt-pdL"/>
                                                 <constraint firstItem="gQU-pg-AD7" firstAttribute="top" secondItem="aIa-x1-qf6" secondAttribute="top" id="X1B-cA-0DG"/>
-                                                <constraint firstAttribute="bottom" secondItem="aIa-x1-qf6" secondAttribute="bottom" id="nsg-pz-WZY"/>
+                                                <constraint firstAttribute="bottom" secondItem="aIa-x1-qf6" secondAttribute="bottom" constant="4" id="nsg-pz-WZY"/>
                                                 <constraint firstItem="aIa-x1-qf6" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="dCP-pg-rEJ" secondAttribute="trailing" constant="8" id="sHk-pl-qV2"/>
                                                 <constraint firstItem="dCP-pg-rEJ" firstAttribute="leading" secondItem="aIa-x1-qf6" secondAttribute="leading" constant="8" id="sMQ-Oo-thW"/>
-                                                <constraint firstItem="aIa-x1-qf6" firstAttribute="leading" secondItem="IOD-uO-0aL" secondAttribute="leading" id="yLZ-Hg-pWj"/>
+                                                <constraint firstItem="aIa-x1-qf6" firstAttribute="leading" secondItem="IOD-uO-0aL" secondAttribute="leading" constant="16" id="yLZ-Hg-pWj"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <userDefinedRuntimeAttributes>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                <integer key="value" value="16"/>
-                                            </userDefinedRuntimeAttribute>
-                                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
-                                        </userDefinedRuntimeAttributes>
+                                        <color key="backgroundColor" red="0.1041314825" green="0.10708437110000001" blue="0.1332485974" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <connections>
+                                            <outlet property="cellImage" destination="aIa-x1-qf6" id="43P-ig-7XF"/>
+                                            <outlet property="dateLabel" destination="dCP-pg-rEJ" id="NEe-S3-thf"/>
+                                            <outlet property="likeButton" destination="gQU-pg-AD7" id="jbQ-y8-vnj"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
