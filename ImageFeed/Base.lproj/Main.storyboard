@@ -30,6 +30,9 @@
                             <constraint firstAttribute="trailing" secondItem="UBA-gq-5r2" secondAttribute="trailing" id="R7k-Sj-89O"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="tableView" destination="UBA-gq-5r2" id="Yfb-IC-Hku"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
