@@ -1,0 +1,24 @@
+//
+//  ProfileViewController.swift
+//  ImageFeed
+//
+//  Created by Георгий on 30.05.2025.
+//
+
+import Foundation
+import UIKit
+
+final class ProfileViewController: UIViewController {
+    
+    @IBOutlet private var profileImageView: UIImageView!
+    @IBOutlet private var nameLabel: UILabel!
+    @IBOutlet private var loginNameLabel: UILabel!
+    @IBOutlet private var descriptionLabel: UILabel!
+    
+    @IBOutlet private var logoutButton: UIButton!
+    
+    
+    @IBAction private func didTapLogoutButton() {
+        
+    }
+}
