@@ -58,7 +58,7 @@ final class ProfileViewController: UIViewController {
         }
         let logoutButton = UIButton.systemButton(with: logoutImage, target: nil, action: #selector(Self.didTapButton))
         logoutButton.translatesAutoresizingMaskIntoConstraints = false
-        logoutButton.tintColor = .red
+        logoutButton.tintColor = UIColor(named: "ypRed")
         view.addSubview(logoutButton)
         logoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20).isActive = true
         logoutButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor).isActive = true
