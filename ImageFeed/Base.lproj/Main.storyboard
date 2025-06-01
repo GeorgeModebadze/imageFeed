@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -246,18 +247,26 @@
                                     <wkPreferences key="preferences"/>
                                 </wkWebViewConfiguration>
                             </wkWebView>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="oud-EA-AGX">
+                                <rect key="frame" x="0.0" y="103" width="393" height="4"/>
+                                <color key="progressTintColor" name="ypBlack"/>
+                            </progressView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="xPj-fi-vuT"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="AsI-ZH-s2J" firstAttribute="leading" secondItem="hdN-nG-7um" secondAttribute="leading" id="3ti-bo-hpV"/>
                             <constraint firstItem="AsI-ZH-s2J" firstAttribute="bottom" secondItem="hdN-nG-7um" secondAttribute="bottom" id="4Zi-f3-DPh"/>
+                            <constraint firstItem="oud-EA-AGX" firstAttribute="top" secondItem="xPj-fi-vuT" secondAttribute="top" id="N92-tr-Crh"/>
+                            <constraint firstItem="oud-EA-AGX" firstAttribute="leading" secondItem="xPj-fi-vuT" secondAttribute="leading" id="QjQ-MV-yen"/>
+                            <constraint firstItem="oud-EA-AGX" firstAttribute="trailing" secondItem="xPj-fi-vuT" secondAttribute="trailing" id="cmS-EJ-ydX"/>
                             <constraint firstItem="AsI-ZH-s2J" firstAttribute="trailing" secondItem="hdN-nG-7um" secondAttribute="trailing" id="pU8-4L-hC9"/>
                             <constraint firstItem="AsI-ZH-s2J" firstAttribute="top" secondItem="xPj-fi-vuT" secondAttribute="top" id="sOO-uz-Q9d"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="gib-a5-VEr"/>
                     <connections>
+                        <outlet property="progressView" destination="oud-EA-AGX" id="i1y-dP-AhD"/>
                         <outlet property="webView" destination="AsI-ZH-s2J" id="XQW-Ch-ZlT"/>
                     </connections>
                 </viewController>
@@ -314,6 +323,9 @@
         <image name="share_button" width="50" height="50"/>
         <image name="tab_editorial_active" width="30" height="30"/>
         <image name="tab_profile_active" width="30" height="30"/>
+        <namedColor name="ypBlack">
+            <color red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
