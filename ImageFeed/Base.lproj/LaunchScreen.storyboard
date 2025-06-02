@@ -17,14 +17,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splash_screen_logo" translatesAutoresizingMaskIntoConstraints="NO" id="ALj-gt-udZ">
-                                <rect key="frame" x="160.33333333333334" y="401" width="72.666666666666657" height="75.333333333333314"/>
+                                <rect key="frame" x="160.33333333333334" y="388.33333333333331" width="72.666666666666657" height="75.333333333333314"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" red="0.1041314825" green="0.10708437110000001" blue="0.1332485974" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
-                            <constraint firstItem="ALj-gt-udZ" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="kAR-zz-ggu"/>
-                            <constraint firstItem="ALj-gt-udZ" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="sQj-Zm-yIL"/>
+                            <constraint firstItem="ALj-gt-udZ" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="kAR-zz-ggu"/>
+                            <constraint firstItem="ALj-gt-udZ" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="sQj-Zm-yIL"/>
                         </constraints>
                     </view>
                 </viewController>

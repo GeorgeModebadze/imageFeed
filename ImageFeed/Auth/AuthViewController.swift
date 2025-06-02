@@ -1,8 +1,14 @@
 import UIKit
 
+protocol AuthViewControllerDelegate: AnyObject {
+    func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String)
+}
+
 final class AuthViewController: UIViewController {
     private let showWebViewSegueIdentifier = "ShowWebView"
     private let oauth2Service = OAuth2Service.shared
+    
+    weak var delegate: AuthViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,11 +46,14 @@ extension AuthViewController: WebViewViewControllerDelegate {
         oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
             
-            switch result {
-            case .success(let token):
-                print("Successfully authenticated with token: \(token)")
-            case .failure(let error):
-                self?.showErrorAlert(error: error)
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let token):
+                    self?.delegate?.authViewController(self!, didAuthenticateWithCode: code)
+                    print("Successfully authenticated with token: \(token)")
+                case .failure(let error):
+                    self?.showErrorAlert(error: error)
+                }
             }
         }
     }
