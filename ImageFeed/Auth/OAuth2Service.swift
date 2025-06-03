@@ -17,13 +17,6 @@ final class OAuth2Service {
         ) {
             assert(Thread.isMainThread)
             
-//            if let currentCode = currentAuthCode {
-//                if currentCode == code {
-//                    completion(.failure(NetworkError.urlSessionError))
-//                    return
-//                }
-//                currentTask?.cancel()
-//            }
             guard currentAuthCode != code else {
                     completion(.failure(NetworkError.urlSessionError))
                     return

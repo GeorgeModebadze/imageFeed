@@ -63,12 +63,10 @@ extension SplashViewController: AuthViewControllerDelegate {
     }
     
     private func fetchOAuthToken(_ code: String) {
-//        UIBlockingProgressHUD.show()
-        ProgressHUD.show()
+        UIBlockingProgressHUD.show()
         
         oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
-//            UIBlockingProgressHUD.dismiss()
-            ProgressHUD.dismiss()
+            UIBlockingProgressHUD.dismiss()
             
             DispatchQueue.main.async {
                 switch result {
