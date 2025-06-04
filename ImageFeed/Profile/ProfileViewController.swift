@@ -1,4 +1,5 @@
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
@@ -15,8 +16,8 @@ final class ProfileViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupConstraints()
-        updateProfileDetails()
         setupObserver()
+        updateProfileDetails()
     }
     
     private func setupObserver() {
@@ -27,22 +28,15 @@ final class ProfileViewController: UIViewController {
         ) { [weak self] _ in
             self?.updateAvatar()
         }
-//        updateAvatar()
+        updateAvatar()
     }
     
-    private func updateAvatar() {                                   // 8
-        guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
-            let url = URL(string: profileImageURL)
-        else { return }
-        // TODO [Sprint 11] Обновить аватар, используя Kingfisher
+    private func updateAvatar() {
+        ProfileImageService.shared.loadAvatar(
+            for: profileImageView,
+            placeholder: UIImage(named: "placeholder_avatar")
+        )
     }
-    
-//    deinit {
-//        if let observer = profileImageServiceObserver {
-//            NotificationCenter.default.removeObserver(observer)
-//        }
-//    }
     
     private func updateProfileDetails() {
         guard let profile = profileService.profile else {
@@ -54,12 +48,7 @@ final class ProfileViewController: UIViewController {
         loginNameLabel.text = profile.loginName
         descriptionLabel.text = profile.bio ?? "Нет описания"
         
-        //        fetchProfileImageURL(for: profile.username)
     }
-    
-    
-    
-    
     
     
     private func showPlaceholderProfile() {
@@ -69,12 +58,13 @@ final class ProfileViewController: UIViewController {
     }
     
     private func setupUI() {
-        profileImageView.image = UIImage(named: "Photo")
+        view.backgroundColor = .ypBlack
         profileImageView.backgroundColor = .clear
         profileImageView.tintColor = .gray
         profileImageView.backgroundColor = .clear
         profileImageView.layer.cornerRadius = 35
         profileImageView.clipsToBounds = true
+        profileImageView.contentMode = .scaleAspectFill
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         
         nameLabel.textColor = .white

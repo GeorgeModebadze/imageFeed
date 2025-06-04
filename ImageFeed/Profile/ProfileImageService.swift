@@ -1,4 +1,5 @@
 import UIKit
+import Kingfisher
 
 struct ProfileImage: Codable {
     //    let large: String
@@ -15,6 +16,39 @@ final class ProfileImageService {
     private let tokenStorage = OAuth2TokenStorage.shared
     
     static let didChangeNotification = Notification.Name("ProfileImageServiceDidChange")
+    
+    
+    func loadAvatar(for imageView: UIImageView, placeholder: UIImage? = nil) {
+        guard let avatarURLString = avatarURL,
+              let avatarURL = URL(string: avatarURLString) else {
+            imageView.image = placeholder ?? UIImage(named: "placeholder_avatar")
+            return
+        }
+        
+        let processor = DownsamplingImageProcessor(size: imageView.bounds.size)
+        DispatchQueue.main.async {
+            imageView.kf.indicatorType = .activity
+            
+            imageView.kf.setImage(
+                with: avatarURL,
+                placeholder: placeholder,
+                options: [
+                    .processor(processor),
+                    .scaleFactor(UIScreen.main.scale),
+                    .transition(.fade(0.25)),
+                    .cacheOriginalImage
+                ],
+                completionHandler: { result in
+                    switch result {
+                    case .success(let value):
+                        print("Аватар загружен: \(value.source.url?.absoluteString ?? "")")
+                    case .failure(let error):
+                        print("Ошибка загрузки аватара: \(error.localizedDescription)")
+                    }
+                }
+            )
+        }
+    }
     
     func fetchProfileImageURL(
         username: String,

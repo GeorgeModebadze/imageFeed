@@ -178,7 +178,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="vmD-Oc-7VO"/>
-                        <color key="backgroundColor" red="0.1041314825" green="0.10708437110000001" blue="0.1332485974" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <color key="backgroundColor" name="ypBlack"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="tab_profile_active" id="Ws8-B0-KlF"/>
                 </viewController>
@@ -221,7 +221,7 @@
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="sY3-7m-5nJ"/>
-                        <color key="backgroundColor" red="0.1041314825" green="0.10708437110000001" blue="0.1332485974" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <color key="backgroundColor" name="ypBlack"/>
                         <constraints>
                             <constraint firstItem="qQM-kq-QGf" firstAttribute="centerX" secondItem="8K0-pq-YNI" secondAttribute="centerX" id="D4w-g0-fbD"/>
                             <constraint firstItem="sY3-7m-5nJ" firstAttribute="bottom" secondItem="qQM-kq-QGf" secondAttribute="bottom" constant="90" id="ExJ-59-2EN"/>
@@ -293,7 +293,7 @@
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="uo6-3S-MUl"/>
-                        <color key="backgroundColor" red="0.1041314825" green="0.10708437110000001" blue="0.1332485974" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <color key="backgroundColor" name="ypBlack"/>
                         <constraints>
                             <constraint firstItem="r1a-2r-OcA" firstAttribute="centerX" secondItem="7Rj-9I-OOF" secondAttribute="centerX" id="6Ka-OJ-XQs"/>
                             <constraint firstItem="r1a-2r-OcA" firstAttribute="centerY" secondItem="7Rj-9I-OOF" secondAttribute="centerY" id="tP1-z3-03k"/>
