@@ -65,7 +65,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                     self?.switchToSplashScreen()
                     print("Successfully authenticated with token: \(token)")
                 case .failure(let error):
-                    self?.showErrorAlert(error: error)
+                    self?.showAuthErrorAlert()
                 }
             }
         }
@@ -75,13 +75,13 @@ extension AuthViewController: WebViewViewControllerDelegate {
         vc.dismiss(animated: true)
     }
     
-    private func showErrorAlert(error: Error) {
+    private func showAuthErrorAlert() {
         let alert = UIAlertController(
-            title: "Ошибка",
-            message: error.localizedDescription,
+            title: "Что-то пошло не так",
+            message: "Не удалось войти в систему",
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        alert.addAction(UIAlertAction(title: "ОК", style: .default))
         present(alert, animated: true)
     }
 }

@@ -25,7 +25,9 @@ final class ProfileImageService {
         task?.cancel()
         
         guard let token = tokenStorage.token else {
-            completion(.failure(NetworkError.urlSessionError))
+            let error = NetworkError.urlSessionError
+            print("[ProfileImageService] No auth token available")
+            completion(.failure(error))
             return
         }
         
@@ -33,34 +35,42 @@ final class ProfileImageService {
         do {
             request = try makeProfileImageRequest(username: username, token: token)
         } catch {
+            print("[ProfileImageService] Failed to create request: \(error.localizedDescription)")
             completion(.failure(error))
             return
         }
         
-        let task = urlSession.data(for: request) { [weak self] (result: Result<Data, Error>) in
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<UserResult, Error>) in
             DispatchQueue.main.async {
                 guard let self = self else { return }
+                
                 switch result {
-                case .success(let data):
-                    do {
-                        let userResult = try JSONDecoder().decode(UserResult.self, from: data)
-                        let avatarURL = userResult.profileImage.small
-                        self.avatarURL = avatarURL
-                        completion(.success(avatarURL))
-                        NotificationCenter.default.post(
-                            name: ProfileImageService.didChangeNotification,
-                            object: self,
-                            userInfo: ["URL": avatarURL]
-                        )
-                    } catch {
-                        completion(.failure(NetworkError.urlRequestError(error)))
-                    }
+                case .success(let userResult):
+                    let avatarURL = userResult.profileImage.small
+                    self.avatarURL = avatarURL
+                    print("[ProfileImageService] Avatar URL loaded: \(avatarURL)")
+                    completion(.success(avatarURL))
+                    NotificationCenter.default.post(
+                        name: ProfileImageService.didChangeNotification,
+                        object: self,
+                        userInfo: ["URL": avatarURL]
+                    )
+                    
                 case .failure(let error):
-                    if let error = error as? URLError, error.code == .cancelled {
-                        return
+                    if let urlError = error as? URLError {
+                        if urlError.code == .cancelled {
+                            print("[ProfileImageService] Request cancelled for \(username)")
+                            return
+                        }
+                        print("[ProfileImageService] Network error: \(urlError.code.rawValue) - \(urlError.localizedDescription)")
+                    } else if let decodingError = error as? DecodingError {
+                        print("[ProfileImageService] Decoding failed: \(decodingError.localizedDescription)")
+                    } else {
+                        print("[ProfileImageService] Error: \(error.localizedDescription)")
                     }
                     completion(.failure(NetworkError.urlRequestError(error)))
                 }
+                
                 self.task = nil
             }
         }
@@ -74,6 +84,7 @@ final class ProfileImageService {
         token: String
     ) throws -> URLRequest {
         guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
+            print("[ProfileImageService] Invalid URL for username: \(username)")
             throw NetworkError.urlSessionError
         }
         

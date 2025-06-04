@@ -38,11 +38,11 @@ final class ProfileViewController: UIViewController {
         // TODO [Sprint 11] Обновить аватар, используя Kingfisher
     }
     
-    deinit {
-        if let observer = profileImageServiceObserver {
-            NotificationCenter.default.removeObserver(observer)
-        }
-    }
+//    deinit {
+//        if let observer = profileImageServiceObserver {
+//            NotificationCenter.default.removeObserver(observer)
+//        }
+//    }
     
     private func updateProfileDetails() {
         guard let profile = profileService.profile else {
