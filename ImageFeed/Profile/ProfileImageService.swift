@@ -2,7 +2,6 @@ import UIKit
 import Kingfisher
 
 struct ProfileImage: Codable {
-    //    let large: String
     let small: String
 }
 

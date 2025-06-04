@@ -1,5 +1,6 @@
 import UIKit
 import ProgressHUD
+import SwiftKeychainWrapper
 
 protocol AuthViewControllerDelegate: AnyObject {
     func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String)
@@ -61,6 +62,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 
                 switch result {
                 case .success(let token):
+                    KeychainWrapper.standard.set(token, forKey: "oauthToken")
                     self?.delegate?.authViewController(self!, didAuthenticateWithCode: code)
                     self?.switchToSplashScreen()
                     print("Successfully authenticated with token: \(token)")
