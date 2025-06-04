@@ -9,31 +9,59 @@ final class ProfileViewController: UIViewController {
     private let logoutButton = UIButton()
     
     private let profileService = ProfileService.shared
-//    private let tokenStorage = OAuth2TokenStorage.shared
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupConstraints()
         updateProfileDetails()
+        setupObserver()
+    }
+    
+    private func setupObserver() {
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: ProfileImageService.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.updateAvatar()
+        }
+//        updateAvatar()
+    }
+    
+    private func updateAvatar() {                                   // 8
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        // TODO [Sprint 11] Обновить аватар, используя Kingfisher
+    }
+    
+    deinit {
+        if let observer = profileImageServiceObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
     
     private func updateProfileDetails() {
-            guard let profile = profileService.profile else {
-                showPlaceholderProfile()
-                return
-            }
-            
-            nameLabel.text = profile.name.isEmpty ? "Имя не указано" : profile.name
-            loginNameLabel.text = profile.loginName
-            descriptionLabel.text = profile.bio ?? "Нет описания"
-            
-            // loadAvatar(from: profile.avatarURL) // можно добавить позже
+        guard let profile = profileService.profile else {
+            showPlaceholderProfile()
+            return
         }
+        
+        nameLabel.text = profile.name.isEmpty ? "Имя не указано" : profile.name
+        loginNameLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio ?? "Нет описания"
+        
+        //        fetchProfileImageURL(for: profile.username)
+    }
     
     
     
-
+    
+    
+    
     private func showPlaceholderProfile() {
         nameLabel.text = "Екатерина Новикова"
         loginNameLabel.text = "@ekaterina_nov"
@@ -44,12 +72,15 @@ final class ProfileViewController: UIViewController {
         profileImageView.image = UIImage(named: "Photo")
         profileImageView.backgroundColor = .clear
         profileImageView.tintColor = .gray
+        profileImageView.backgroundColor = .clear
+        profileImageView.layer.cornerRadius = 35
+        profileImageView.clipsToBounds = true
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
-
+        
         nameLabel.textColor = .white
         nameLabel.font = .systemFont(ofSize: 23, weight: .bold)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-
+        
         loginNameLabel.font = .systemFont(ofSize: 13, weight: .medium)
         loginNameLabel.textColor = .gray
         loginNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -95,6 +126,7 @@ final class ProfileViewController: UIViewController {
             logoutButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor)
         ])
     }
+    
     
     //TODO: complete func later
     @objc
