@@ -37,6 +37,16 @@ final class AuthViewController: UIViewController {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = UIColor(named: "ypBlack")
     }
+    
+    private func switchToSplashScreen() {
+            let splashVC = SplashViewController()
+            if let window = UIApplication.shared.windows.first {
+                window.rootViewController = splashVC
+                window.makeKeyAndVisible()
+            } else {
+                present(splashVC, animated: true)
+            }
+        }
 }
 
 extension AuthViewController: WebViewViewControllerDelegate {
@@ -45,12 +55,14 @@ extension AuthViewController: WebViewViewControllerDelegate {
         UIBlockingProgressHUD.show()
         
         oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
-            UIBlockingProgressHUD.dismiss()
             
             DispatchQueue.main.async {
+                UIBlockingProgressHUD.dismiss()
+                
                 switch result {
                 case .success(let token):
                     self?.delegate?.authViewController(self!, didAuthenticateWithCode: code)
+                    self?.switchToSplashScreen()
                     print("Successfully authenticated with token: \(token)")
                 case .failure(let error):
                     self?.showErrorAlert(error: error)

@@ -5,13 +5,14 @@ final class SplashViewController: UIViewController {
     private let ShowAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
     
     private let oauth2Service = OAuth2Service.shared
+    private let profileService = ProfileService.shared
     private let oauth2TokenStorage = OAuth2TokenStorage.shared
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if oauth2TokenStorage.token != nil {
-            switchToTabBarController()
+        if let token = oauth2TokenStorage.token {
+            fetchProfile(token: token)
         } else {
             performSegue(withIdentifier: ShowAuthenticationScreenSegueIdentifier, sender: nil)
         }
@@ -34,6 +35,36 @@ final class SplashViewController: UIViewController {
         let tabBarController = UIStoryboard(name: "Main", bundle: .main)
             .instantiateViewController(withIdentifier: "TabBarViewController")
         window.rootViewController = tabBarController
+    }
+    
+    private func fetchProfile(token: String) {
+        UIBlockingProgressHUD.show()
+        profileService.fetchProfile(token) { [weak self] result in
+            DispatchQueue.main.async {
+                UIBlockingProgressHUD.dismiss()
+                guard let self = self else { return }
+                
+                switch result {
+                case .success:
+                    self.switchToTabBarController()
+                case .failure(let error):
+                    print("Failed to fetch profile: \(error.localizedDescription)")
+                    self.showErrorAlert()
+                }
+            }
+        }
+    }
+    
+    private func showErrorAlert() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так(",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            self?.showAuthScreen()
+        })
+        present(alert, animated: true)
     }
 }
 
@@ -66,15 +97,17 @@ extension SplashViewController: AuthViewControllerDelegate {
         UIBlockingProgressHUD.show()
         
         oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
-            UIBlockingProgressHUD.dismiss()
-            
             DispatchQueue.main.async {
+                guard let self = self else { return }
+                
                 switch result {
-                case .success:
-                    self?.switchToTabBarController()
+                case .success(let token):
+                    self.oauth2TokenStorage.token = token
+                    self.fetchProfile(token: token)
                 case .failure(let error):
+                    UIBlockingProgressHUD.dismiss()
                     print("Authentication error: \(error.localizedDescription)")
-                    self?.showAuthScreen()
+                    self.showAuthScreen()
                 }
             }
         }
