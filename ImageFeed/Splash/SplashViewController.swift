@@ -97,15 +97,13 @@ final class SplashViewController: UIViewController {
         present(alert, animated: true)
     }
     
-//    private func showAuthScreen() {
-//        let authViewController = AuthViewController()
-//        authViewController.delegate = self
-//        authViewController.modalPresentationStyle = .fullScreen
-//        present(authViewController, animated: true)
-//    }
+
     private func showAuthScreen() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let authViewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as! AuthViewController
+        guard let authViewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController else {
+                assertionFailure("Не удалось создать AuthViewController из storyboard")
+                return
+            }
         authViewController.delegate = self
         authViewController.modalPresentationStyle = .fullScreen
         present(authViewController, animated: true)

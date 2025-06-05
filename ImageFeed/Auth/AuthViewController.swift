@@ -60,14 +60,17 @@ extension AuthViewController: WebViewViewControllerDelegate {
             DispatchQueue.main.async {
                 UIBlockingProgressHUD.dismiss()
                 
+                guard let self = self else { return }
+
+                
                 switch result {
                 case .success(let token):
                     KeychainWrapper.standard.set(token, forKey: "oauthToken")
-                    self?.delegate?.authViewController(self!, didAuthenticateWithCode: code)
-                    self?.switchToSplashScreen()
+                    self.delegate?.authViewController(self, didAuthenticateWithCode: code)
+                    self.switchToSplashScreen()
                     print("Successfully authenticated with token: \(token)")
                 case .failure(let error):
-                    self?.showAuthErrorAlert()
+                    self.showAuthErrorAlert()
                 }
             }
         }

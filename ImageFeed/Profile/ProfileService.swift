@@ -1,5 +1,5 @@
 import UIKit
-//
+
 struct Profile {
     let username: String
     let firstName: String?
