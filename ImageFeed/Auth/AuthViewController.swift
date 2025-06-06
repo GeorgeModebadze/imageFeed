@@ -1,4 +1,6 @@
 import UIKit
+import ProgressHUD
+import SwiftKeychainWrapper
 
 protocol AuthViewControllerDelegate: AnyObject {
     func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String)
@@ -36,6 +38,16 @@ final class AuthViewController: UIViewController {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = UIColor(named: "ypBlack")
     }
+    
+    private func switchToSplashScreen() {
+            let splashVC = SplashViewController()
+            if let window = UIApplication.shared.windows.first {
+                window.rootViewController = splashVC
+                window.makeKeyAndVisible()
+            } else {
+                present(splashVC, animated: true)
+            }
+        }
 }
 
 extension AuthViewController: WebViewViewControllerDelegate {
@@ -44,15 +56,21 @@ extension AuthViewController: WebViewViewControllerDelegate {
         UIBlockingProgressHUD.show()
         
         oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
-            UIBlockingProgressHUD.dismiss()
             
             DispatchQueue.main.async {
+                UIBlockingProgressHUD.dismiss()
+                
+                guard let self = self else { return }
+
+                
                 switch result {
                 case .success(let token):
-                    self?.delegate?.authViewController(self!, didAuthenticateWithCode: code)
+                    KeychainWrapper.standard.set(token, forKey: "oauthToken")
+                    self.delegate?.authViewController(self, didAuthenticateWithCode: code)
+                    self.switchToSplashScreen()
                     print("Successfully authenticated with token: \(token)")
                 case .failure(let error):
-                    self?.showErrorAlert(error: error)
+                    self.showAuthErrorAlert()
                 }
             }
         }
@@ -62,13 +80,13 @@ extension AuthViewController: WebViewViewControllerDelegate {
         vc.dismiss(animated: true)
     }
     
-    private func showErrorAlert(error: Error) {
+    private func showAuthErrorAlert() {
         let alert = UIAlertController(
-            title: "Ошибка",
-            message: error.localizedDescription,
+            title: "Что-то пошло не так",
+            message: "Не удалось войти в систему",
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        alert.addAction(UIAlertAction(title: "ОК", style: .default))
         present(alert, animated: true)
     }
 }

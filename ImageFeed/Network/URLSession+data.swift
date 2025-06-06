@@ -7,30 +7,47 @@ enum NetworkError: Error {
 }
 
 extension URLSession {
-    func data(
+    func objectTask<T: Decodable>(
         for request: URLRequest,
-        completion: @escaping (Result<Data, Error>) -> Void
+        completion: @escaping (Result<T, Error>) -> Void
     ) -> URLSessionTask {
-        let fullfillCompletionOnTheMainThread: (Result<Data, Error>) -> Void = { result in
+        let task = dataTask(with: request) { (data, response, error) in
             DispatchQueue.main.async {
-                completion(result)
+                if let error = error {
+                    print("[Network] Request failed: \(error.localizedDescription), URL: \(request.url?.absoluteString ?? "")")
+                    completion(.failure(NetworkError.urlRequestError(error)))
+                    return
+                }
+                
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    print("[Network] Invalid response: no HTTP response, URL: \(request.url?.absoluteString ?? "")")
+                    completion(.failure(NetworkError.urlSessionError))
+                    return
+                }
+                
+                guard (200..<300).contains(httpResponse.statusCode) else {
+                    print("[Network] HTTP error: status \(httpResponse.statusCode), URL: \(request.url?.absoluteString ?? "")")
+                    completion(.failure(NetworkError.httpStatusCode(httpResponse.statusCode)))
+                    return
+                }
+                
+                guard let data = data else {
+                    print("[Network] No data received, URL: \(request.url?.absoluteString ?? "")")
+                    completion(.failure(NetworkError.urlSessionError))
+                    return
+                }
+                
+                do {
+                    let decodedObject = try JSONDecoder().decode(T.self, from: data)
+                    completion(.success(decodedObject))
+                } catch {
+                    let responseString = String(data: data, encoding: .utf8) ?? "Unable to decode response"
+                    print("[Network] Decoding failed: \(error), Response: \(responseString), URL: \(request.url?.absoluteString ?? "")")
+                    completion(.failure(error))
+                }
             }
         }
-        
-        let task = dataTask(with: request, completionHandler: { data, response, error in
-            if let data = data, let response = response, let statusCode = (response as? HTTPURLResponse)?.statusCode {
-                if 200 ..< 300 ~= statusCode {
-                    fullfillCompletionOnTheMainThread(.success(data))
-                } else {
-                    fullfillCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode)))
-                }
-            } else if let error = error {
-                fullfillCompletionOnTheMainThread(.failure(NetworkError.urlRequestError(error)))
-            } else {
-                fullfillCompletionOnTheMainThread(.failure(NetworkError.urlSessionError))
-            }
-        })
-        
         return task
     }
 }
+

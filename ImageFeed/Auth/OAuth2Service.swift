@@ -7,53 +7,73 @@ final class OAuth2Service {
     private let urlSession = URLSession.shared
     private let tokenStorage = OAuth2TokenStorage.shared
     private var currentTask: URLSessionTask?
+    private var currentAuthCode: String?
     
     func fetchOAuthToken(
         code: String,
         completion: @escaping (Result<String, Error>) -> Void
     ) {
+        assert(Thread.isMainThread)
+        
+        guard currentAuthCode != code else {
+            let error = NetworkError.urlSessionError
+            print("[OAuth2Service] Duplicate request with same auth code")
+            completion(.failure(error))
+            return
+        }
+        
         currentTask?.cancel()
+        currentAuthCode = code
         
         guard let request = makeOAuthTokenRequest(code: code) else {
+            currentAuthCode = nil
+            print("[OAuth2Service] Failed to create token request")
             completion(.failure(NetworkError.urlSessionError))
             return
         }
         
-        let task = urlSession.data(for: request) { [weak self] result in
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             DispatchQueue.main.async {
+                self?.currentTask = nil
+                self?.currentAuthCode = nil
+                
                 switch result {
-                case .success(let data):
-                    self?.handleSuccess(data: data, completion: completion)
+                case .success(let tokenResponse):
+                    self?.tokenStorage.token = tokenResponse.accessToken
+                    completion(.success(tokenResponse.accessToken))
                 case .failure(let error):
                     self?.handleFailure(error: error, completion: completion)
                 }
-                self?.currentTask = nil
             }
         }
         
-        self.currentTask = task
+        currentTask = task
         task.resume()
     }
     
-    private func handleSuccess(data: Data, completion: @escaping (Result<String, Error>) -> Void) {
-        do {
-            let tokenResponse = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: data)
-            self.tokenStorage.token = tokenResponse.accessToken
-            completion(.success(tokenResponse.accessToken))
-        } catch {
-            print("[OAuth2Service] Decoding error: \(error.localizedDescription)")
-            completion(.failure(NetworkError.urlRequestError(error)))
-        }
-    }
-    
     private func handleFailure(error: Error, completion: @escaping (Result<String, Error>) -> Void) {
-        if let urlError = error as? URLError {
-            print("[OAuth2Service] URL error: \(urlError.errorCode) - \(urlError.localizedDescription)")
-            completion(.failure(NetworkError.urlRequestError(urlError)))
-        } else {
-            print("[OAuth2Service] Unknown error: \(error.localizedDescription)")
-            completion(.failure(NetworkError.urlSessionError))
+        let errorMessage: String
+        
+        switch error {
+        case let urlError as URLError:
+            errorMessage = "URL error \(urlError.code): \(urlError.localizedDescription)"
+        case let decodingError as DecodingError:
+            errorMessage = "Decoding error: \(decodingError.localizedDescription)"
+        case let networkError as NetworkError:
+            switch networkError {
+            case .httpStatusCode(let code):
+                errorMessage = "HTTP error \(code)"
+            case .urlRequestError(let error):
+                errorMessage = "Request error: \(error.localizedDescription)"
+            case .urlSessionError:
+                errorMessage = "Session error"
+            }
+        default:
+            errorMessage = "Unknown error: \(error.localizedDescription)"
         }
+        
+        print("[OAuth2Service] \(errorMessage)")
+        completion(.failure(error))
     }
     
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
@@ -71,7 +91,7 @@ final class OAuth2Service {
         ]
         
         guard let url = components.url else {
-            print("[OAuth2Service] URL creation failed")
+            print("[OAuth2Service] Failed to create URL from components")
             return nil
         }
         

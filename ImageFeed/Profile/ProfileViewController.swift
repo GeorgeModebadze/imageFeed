@@ -1,69 +1,122 @@
 import UIKit
+import SwiftKeychainWrapper
 
 final class ProfileViewController: UIViewController {
-    private var imageView: UIImageView?
-    private var nameLabel: UILabel?
-    private var loginNameLabel: UILabel?
-    private var descriptionLabel: UILabel?
-    private var logoutButton: UIButton?
+    
+    private let profileImageView = UIImageView()
+    private let nameLabel = UILabel()
+    private let loginNameLabel = UILabel()
+    private let descriptionLabel = UILabel()
+    private let logoutButton = UIButton()
+    
+    private let profileService = ProfileService.shared
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupUI()
+        setupConstraints()
+        setupObserver()
+        updateProfileDetails()
+    }
+    
+    private func setupObserver() {
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: ProfileImageService.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.updateAvatar()
+        }
+        updateAvatar()
+    }
+    
+    private func updateAvatar() {
+        ProfileImageService.shared.loadAvatar(
+            for: profileImageView,
+            placeholder: UIImage(named: "placeholder_avatar")
+        )
+    }
+    
+    private func updateProfileDetails() {
+        guard let profile = profileService.profile else {
+            showPlaceholderProfile()
+            return
+        }
         
-        let profileImage = UIImage(named: "Photo")
-        let imageView = UIImageView(image: profileImage)
-        imageView.backgroundColor = .clear
-        imageView.tintColor = .gray
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(imageView)
-        imageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
-        imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32).isActive = true
-        imageView.widthAnchor.constraint(equalToConstant: 70).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 70).isActive = true
+        nameLabel.text = profile.name.isEmpty ? "Имя не указано" : profile.name
+        loginNameLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio ?? "Нет описания"
         
-        let nameLabel = UILabel()
+    }
+    
+    
+    private func showPlaceholderProfile() {
         nameLabel.text = "Екатерина Новикова"
+        loginNameLabel.text = "@ekaterina_nov"
+        descriptionLabel.text = "Hello, World!"
+    }
+    
+    private func setupUI() {
+        view.backgroundColor = .ypBlack
+        profileImageView.backgroundColor = .clear
+        profileImageView.tintColor = .gray
+        profileImageView.backgroundColor = .clear
+        profileImageView.layer.cornerRadius = 35
+        profileImageView.clipsToBounds = true
+        profileImageView.contentMode = .scaleAspectFill
+        profileImageView.translatesAutoresizingMaskIntoConstraints = false
+        
         nameLabel.textColor = .white
         nameLabel.font = .systemFont(ofSize: 23, weight: .bold)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(nameLabel)
-        nameLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor).isActive = true
-        nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8).isActive = true
-        nameLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 16).isActive = true
-        self.nameLabel = nameLabel
         
-        let loginNameLabel = UILabel()
-        loginNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        loginNameLabel.text = "@ekaterina_nov"
         loginNameLabel.font = .systemFont(ofSize: 13, weight: .medium)
         loginNameLabel.textColor = .gray
-        view.addSubview(loginNameLabel)
-        loginNameLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor).isActive = true
-        loginNameLabel.trailingAnchor.constraint(equalTo: nameLabel.trailingAnchor).isActive = true
-        loginNameLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8).isActive = true
+        loginNameLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        let descriptionLabel = UILabel()
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(descriptionLabel)
-        descriptionLabel.text = "Hello, World!"
         descriptionLabel.font = .systemFont(ofSize: 13, weight: .medium)
         descriptionLabel.textColor = .white
-        descriptionLabel.leadingAnchor.constraint(equalTo: loginNameLabel.leadingAnchor).isActive = true
-        descriptionLabel.trailingAnchor.constraint(equalTo: loginNameLabel.trailingAnchor, constant: 16).isActive = true
-        descriptionLabel.topAnchor.constraint(equalTo: loginNameLabel.bottomAnchor, constant: 8).isActive = true
+        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         
         guard let logoutImage = UIImage(named: "logout_button") else {
             assertionFailure("Не найдена иконка logout_button")
             return
         }
-        let logoutButton = UIButton.systemButton(with: logoutImage, target: nil, action: #selector(Self.didTapButton))
-        logoutButton.translatesAutoresizingMaskIntoConstraints = false
+        logoutButton.setImage(logoutImage, for: .normal)
         logoutButton.tintColor = UIColor(named: "ypRed")
-        view.addSubview(logoutButton)
-        logoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20).isActive = true
-        logoutButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor).isActive = true
+        logoutButton.translatesAutoresizingMaskIntoConstraints = false
+        logoutButton.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
+        
+        [profileImageView, nameLabel, loginNameLabel, descriptionLabel, logoutButton].forEach {
+            view.addSubview($0)
+        }
     }
-
+    
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            profileImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            profileImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
+            profileImageView.widthAnchor.constraint(equalToConstant: 70),
+            profileImageView.heightAnchor.constraint(equalToConstant: 70),
+            
+            nameLabel.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor),
+            nameLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 8),
+            nameLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            
+            loginNameLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+            loginNameLabel.trailingAnchor.constraint(equalTo: nameLabel.trailingAnchor),
+            loginNameLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
+            
+            descriptionLabel.leadingAnchor.constraint(equalTo: loginNameLabel.leadingAnchor),
+            descriptionLabel.trailingAnchor.constraint(equalTo: loginNameLabel.trailingAnchor, constant: 16),
+            descriptionLabel.topAnchor.constraint(equalTo: loginNameLabel.bottomAnchor, constant: 8),
+            
+            logoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            logoutButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor)
+        ])
+    }
+    
     
     //TODO: complete func later
     @objc
