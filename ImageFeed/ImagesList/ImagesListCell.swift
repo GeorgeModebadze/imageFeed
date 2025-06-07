@@ -13,6 +13,6 @@ final class ImagesListCell: UITableViewCell {
         super.prepareForReuse()
         
         cellImage.kf.cancelDownloadTask()
-        //        cellImage.image = nil
+        
     }
 }

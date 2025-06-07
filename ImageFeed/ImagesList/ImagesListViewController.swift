@@ -57,7 +57,6 @@ final class ImagesListViewController: UIViewController {
                     }
                     self?.tableView.insertRows(at: indexPaths, with: .automatic)
                 } completion: { _ in }
-                self?.tableView.reloadRows(at: self?.tableView.indexPathsForVisibleRows ?? [], with: .none)
             }
         }
     }
@@ -78,40 +77,6 @@ final class ImagesListViewController: UIViewController {
             super.prepare(for: segue, sender: sender)
         }
     }
-    
-    //    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    //        if segue.identifier == showSingleImageSegueIdentifier {
-    //            guard
-    //                let viewController = segue.destination as? SingleImageViewController,
-    //                let indexPath = sender as? IndexPath
-    //            else {
-    //                assertionFailure("Invalid segue destination")
-    //                return
-    //            }
-    //
-    //            let image = UIImage(named: photosName[indexPath.row])
-    //            viewController.image = image
-    //        } else {
-    //            super.prepare(for: segue, sender: sender)
-    //        }
-    //    }
-    
-    //    func updateTableViewAnimated() {
-    //        let oldCount = photos.count
-    //        let newCount = imagesListService.photos.count
-    //
-    //        if oldCount != newCount {
-    //            photos = imagesListService.photos
-    //            DispatchQueue.main.async { [weak self] in
-    //                self?.tableView.performBatchUpdates {
-    //                    let indexPaths = (oldCount..<newCount).map { i in
-    //                        IndexPath(row: i, section: 0)
-    //                    }
-    //                    self?.tableView.insertRows(at: indexPaths, with: .automatic)
-    //                } completion: { _ in }
-    //            }
-    //        }
-    //    }
 }
 
 extension ImagesListViewController: UITableViewDataSource {
@@ -147,22 +112,14 @@ extension ImagesListViewController {
         cell.cellImage.kf.cancelDownloadTask()
         
         cell.cellImage.kf.indicatorType = .activity
-//        if let url = URL(string: photo.thumbImageURL) {
-//            cell.cellImage.kf.setImage(with: url)
-//        }
-        guard let url = URL(string: photo.thumbImageURL) else {
-                cell.cellImage.image = UIImage(named: "stub")
-                return
+
+        if let url = URL(string: photo.thumbImageURL) {
+                cell.cellImage.kf.setImage(
+                    with: url,
+                    placeholder: UIImage(named: "stub"),
+                    options: [.transition(.fade(0.2))]
+                )
             }
-            
-            cell.cellImage.kf.setImage(
-                with: url,
-                placeholder: UIImage(named: "stub"),
-                options: [
-                    .transition(.fade(0.2)),
-                    .keepCurrentImageWhileLoading
-                ]
-            )
         
         if let date = photo.createdAt {
             cell.dateLabel.text = dateFormatter.string(from: date)
@@ -191,10 +148,3 @@ extension ImagesListViewController: UITableViewDelegate {
         return cellHeight
     }
 }
-
-
-
-
-
-
-
