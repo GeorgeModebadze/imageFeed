@@ -91,7 +91,10 @@ extension ImagesListViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
+        
         configCell(for: imageListCell, with: indexPath)
+        
+        imageListCell.delegate = self
         
         return imageListCell
     }
@@ -108,18 +111,16 @@ extension ImagesListViewController {
         let photo = photos[indexPath.row]
         
         cell.cellImage.image = UIImage(named: "stub")
-        
         cell.cellImage.kf.cancelDownloadTask()
-        
         cell.cellImage.kf.indicatorType = .activity
-
+        
         if let url = URL(string: photo.thumbImageURL) {
-                cell.cellImage.kf.setImage(
-                    with: url,
-                    placeholder: UIImage(named: "stub"),
-                    options: [.transition(.fade(0.2))]
-                )
-            }
+            cell.cellImage.kf.setImage(
+                with: url,
+                placeholder: UIImage(named: "stub"),
+                options: [.transition(.fade(0.2))]
+            )
+        }
         
         if let date = photo.createdAt {
             cell.dateLabel.text = dateFormatter.string(from: date)
@@ -127,9 +128,10 @@ extension ImagesListViewController {
             cell.dateLabel.text = ""
         }
         
-        let isLiked = indexPath.row % 2 == 0
-        let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
-        cell.likeButton.setImage(likeImage, for: .normal)
+//        let isLiked = indexPath.row % 2 == 0
+//        let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
+//        cell.likeButton.setImage(likeImage, for: .normal)
+        cell.setIsLiked(photo.isLiked)
     }
 }
 
@@ -148,3 +150,38 @@ extension ImagesListViewController: UITableViewDelegate {
         return cellHeight
     }
 }
+
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let photo = photos[indexPath.row]
+        
+        UIBlockingProgressHUD.show()
+        imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
+            
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    self.photos = self.imagesListService.photos
+                    self.tableView.reloadRows(at: [indexPath], with: .none)
+                    UIBlockingProgressHUD.dismiss()
+                    
+                case .failure(let error):
+                    UIBlockingProgressHUD.dismiss()
+                    print("Ошибка при изменении лайка:", error)
+                    
+                    let alert = UIAlertController(
+                        title: "Что-то пошло не так",
+                        message: "Не удалось изменить лайк",
+                        preferredStyle: .alert
+                    )
+                    alert.addAction(UIAlertAction(title: "Ок", style: .default))
+                    self.present(alert, animated: true)
+                }
+            }
+        }
+    }
+}
+
