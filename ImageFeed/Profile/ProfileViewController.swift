@@ -38,6 +38,12 @@ final class ProfileViewController: UIViewController {
         )
     }
     
+    deinit {
+        if let observer = profileImageServiceObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+    
     private func updateProfileDetails() {
         guard let profile = profileService.profile else {
             showPlaceholderProfile()
@@ -131,6 +137,7 @@ final class ProfileViewController: UIViewController {
         
         alert.addAction(UIAlertAction(title: "Да", style: .destructive) { [weak self] _ in
             self?.performLogout()
+            self?.showSplashScreen() 
         })
         
         alert.addAction(UIAlertAction(title: "Нет", style: .cancel))
@@ -142,6 +149,7 @@ final class ProfileViewController: UIViewController {
         ProfileLogoutService.shared.logout()
         
         switchToAuthViewController()
+        
     }
     
     private func switchToAuthViewController() {
@@ -157,4 +165,16 @@ final class ProfileViewController: UIViewController {
             window.rootViewController = authVC
         })
     }
+    
+    func showSplashScreen() {
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let window = windowScene.windows.first else {
+                assertionFailure("Не удается открыть UIWindow")
+                return
+            }
+            
+            let splashViewController = SplashViewController()
+            window.rootViewController = splashViewController
+        }
+    
 }

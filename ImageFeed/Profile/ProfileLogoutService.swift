@@ -7,6 +7,11 @@ final class ProfileLogoutService {
     
     private init() {}
     
+    private let oauth = OAuth2TokenStorage.shared
+    private let profileService = ProfileService.shared
+    private let profileImageService = ProfileImageService.shared
+    private let imagesListService = ImagesListService.shared
+    
     func logout() {
         cleanCookies()
         resetToken()
@@ -25,15 +30,16 @@ final class ProfileLogoutService {
     }
     
     private func resetToken() {
-        OAuth2TokenStorage.shared.token = nil
+        KeychainWrapper.standard.removeObject(forKey: oauth.tokenKey)
+        oauth.token = nil
     }
     
     private func resetProfileData() {
-        ProfileService.shared.cleanProfile()
-        ProfileImageService.shared.cleanAvatarURL()
+        profileService.cleanProfile()
+        profileImageService.cleanAvatarURL()
     }
     
     private func resetImagesData() {
-        ImagesListService.shared.cleanPhotos()
+        imagesListService.cleanPhotos()
     }
 }
