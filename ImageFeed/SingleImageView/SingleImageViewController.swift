@@ -45,28 +45,37 @@ final class SingleImageViewController: UIViewController {
         imageView.kf.setImage(with: url) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
             
+            guard let self else { return }
+            
             switch result {
             case .success(let imageResult):
                 DispatchQueue.main.async {
-                    self?.imageView.image = imageResult.image
-                    self?.imageView.frame.size = imageResult.image.size
-                    self?.rescaleAndCenterImageInScrollView(image: imageResult.image)
+                    self.imageView.image = imageResult.image
+                    self.imageView.frame.size = imageResult.image.size
+                    self.rescaleAndCenterImageInScrollView(image: imageResult.image)
                 }
                 
             case .failure:
-                self?.showErrorAlert()
+                self.showErrorAlert()
             }
         }
     }
     
-    func showErrorAlert() {
-            let alert = UIAlertController(title: "Что-то пошло не так",
-                                          message: "Не удалось войти в систему",
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Ок", style: .default))
-            
-            present(alert, animated: true)
-        }
+    private func showErrorAlert() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так",
+            message: "Попробовать ещё раз?",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Не надо", style: .default))
+        alert.addAction(UIAlertAction(title: "Повторить", style: .default) { [weak self] _ in
+            guard let url = self?.imageURL else { return }
+            self?.loadImage(from: url)
+        })
+        
+        present(alert, animated: true)
+    }
     
     private func updateUI(with image: UIImage) {
             imageView.image = image

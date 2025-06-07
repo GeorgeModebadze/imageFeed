@@ -69,7 +69,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                     self.delegate?.authViewController(self, didAuthenticateWithCode: code)
                     self.switchToSplashScreen()
                     print("Successfully authenticated with token: \(token)")
-                case .failure(let error):
+                case .failure:
                     self.showAuthErrorAlert()
                 }
             }
