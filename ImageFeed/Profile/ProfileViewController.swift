@@ -137,7 +137,7 @@ final class ProfileViewController: UIViewController {
         
         alert.addAction(UIAlertAction(title: "Да", style: .destructive) { [weak self] _ in
             self?.performLogout()
-            self?.showSplashScreen() 
+            self?.showSplashScreen()
         })
         
         alert.addAction(UIAlertAction(title: "Нет", style: .cancel))
@@ -178,3 +178,4 @@ final class ProfileViewController: UIViewController {
         }
     
 }
+
