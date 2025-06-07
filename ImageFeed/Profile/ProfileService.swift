@@ -26,6 +26,11 @@ final class ProfileService {
     static let shared = ProfileService()
     private var task: URLSessionTask?
     private(set) var profile: Profile?
+    
+    func cleanProfile() {
+        profile = nil
+    }
+    
     private let urlSession = URLSession.shared
     private let tokenStorage = OAuth2TokenStorage.shared
     

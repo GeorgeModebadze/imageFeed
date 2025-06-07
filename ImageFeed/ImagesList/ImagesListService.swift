@@ -7,6 +7,11 @@ final class ImagesListService {
     
     private(set) var photos: [Photo] = []
     
+    func cleanPhotos() {
+        photos = []
+        lastLoadedPage = 0
+    }
+    
     private let dateFormatter = ISO8601DateFormatter()
     private var lastLoadedPage = 0
     private var isLoading = false
