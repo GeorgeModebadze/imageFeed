@@ -14,6 +14,10 @@ final class ProfileImageService {
     private let urlSession = URLSession.shared
     private let tokenStorage = OAuth2TokenStorage.shared
     
+    func cleanAvatarURL() {
+        avatarURL = nil
+    }
+    
     static let didChangeNotification = Notification.Name("ProfileImageServiceDidChange")
     
     
