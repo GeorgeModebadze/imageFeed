@@ -26,7 +26,8 @@ final class AuthViewController: UIViewController {
                 assertionFailure("Failed to prepare for \(showWebViewSegueIdentifier)")
                 return
             }
-            let webViewPresenter = WebViewPresenter()
+            let authHelper = AuthHelper()
+            let webViewPresenter = WebViewPresenter(authHelper: authHelper)
             webViewViewController.presenter = webViewPresenter
             webViewPresenter.view = webViewViewController
             webViewViewController.delegate = self
@@ -44,14 +45,14 @@ final class AuthViewController: UIViewController {
     }
     
     private func switchToSplashScreen() {
-            let splashVC = SplashViewController()
-            if let window = UIApplication.shared.windows.first {
-                window.rootViewController = splashVC
-                window.makeKeyAndVisible()
-            } else {
-                present(splashVC, animated: true)
-            }
+        let splashVC = SplashViewController()
+        if let window = UIApplication.shared.windows.first {
+            window.rootViewController = splashVC
+            window.makeKeyAndVisible()
+        } else {
+            present(splashVC, animated: true)
         }
+    }
 }
 
 extension AuthViewController: WebViewViewControllerDelegate {
@@ -65,7 +66,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 UIBlockingProgressHUD.dismiss()
                 
                 guard let self = self else { return }
-
+                
                 
                 switch result {
                 case .success(let token):
