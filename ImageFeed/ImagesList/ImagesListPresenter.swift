@@ -50,21 +50,6 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         imagesListService.fetchPhotosNextPage()
     }
     
-    //    private func convertToViewModel(photoResult: PhotoResult) -> PhotoModels.Photo? {
-    //        let size = CGSize(width: photoResult.width, height: photoResult.height)
-    //        let createdAt = dateFormatter.date(from: photoResult.createdAt)
-    //
-    //        return PhotoModels.Photo(
-    //            id: photoResult.id,
-    //            size: size,
-    //            createdAt: createdAt,
-    //            welcomeDescription: photoResult.description,
-    //            thumbImageURL: photoResult.urls.thumb,
-    //            largeImageURL: photoResult.urls.full,
-    //            isLiked: photoResult.likedByUser
-    //        )
-    //    }
-    
     func changeLike(photoId: String, isLike: Bool) {
         UIBlockingProgressHUD.show()
         imagesListService.changeLike(photoId: photoId, isLike: isLike) { [weak self] result in
@@ -74,42 +59,47 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
             
             switch result {
             case .success:
-                self.updatePhotos()
-            case .failure:
-                self.view?.showLikeErrorAlert()
+                print("Like changed successfully")
+                //                self.updatePhotos()
+                if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
+                    self.view?.reloadRow(at: IndexPath(row: index, section: 0))
+                }
+                case .failure:
+                    print("Like change failed")
+                    self.view?.showLikeErrorAlert()
+                }
+            }
+        }
+        
+        func photoForIndexPath(_ indexPath: IndexPath) -> PhotoModels.Photo {
+            guard indexPath.row < photos.count else {
+                fatalError("Index out of range")
+            }
+            return photos[indexPath.row]
+        }
+        
+        func countOfPhotos() -> Int {
+            return photos.count
+        }
+        
+        func heightForRowAt(indexPath: IndexPath, tableViewWidth: CGFloat) -> CGFloat {
+            let photo = photoForIndexPath(indexPath)
+            let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
+            let imageViewWidth = tableViewWidth - imageInsets.left - imageInsets.right
+            
+            guard photo.size.width > 0 else {
+                return 0
+            }
+            
+            let imageWidth = photo.size.width
+            let scale = imageViewWidth / imageWidth
+            let cellHeight = photo.size.height * scale + imageInsets.top + imageInsets.bottom
+            return cellHeight
+        }
+        
+        deinit {
+            if let observer = observer {
+                NotificationCenter.default.removeObserver(observer)
             }
         }
     }
-    
-    func photoForIndexPath(_ indexPath: IndexPath) -> PhotoModels.Photo {
-        guard indexPath.row < photos.count else {
-            fatalError("Index out of range")
-        }
-        return photos[indexPath.row]
-    }
-    
-    func countOfPhotos() -> Int {
-        return photos.count
-    }
-    
-    func heightForRowAt(indexPath: IndexPath, tableViewWidth: CGFloat) -> CGFloat {
-        let photo = photoForIndexPath(indexPath)
-        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
-        let imageViewWidth = tableViewWidth - imageInsets.left - imageInsets.right
-        
-        guard photo.size.width > 0 else {
-            return 0
-        }
-        
-        let imageWidth = photo.size.width
-        let scale = imageViewWidth / imageWidth
-        let cellHeight = photo.size.height * scale + imageInsets.top + imageInsets.bottom
-        return cellHeight
-    }
-    
-    deinit {
-        if let observer = observer {
-            NotificationCenter.default.removeObserver(observer)
-        }
-    }
-}

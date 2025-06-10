@@ -4,6 +4,7 @@ import Kingfisher
 public protocol ImagesListViewControllerProtocol: AnyObject {
     func updateTableViewAnimated(oldCount: Int, newCount: Int)
     func showLikeErrorAlert()
+    func reloadRow(at indexPath: IndexPath)
 }
 
 final class ImagesListViewController: UIViewController, ImagesListViewControllerProtocol {
@@ -57,6 +58,10 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
         }
     }
     
+    func reloadRow(at indexPath: IndexPath) {
+        tableView.reloadRows(at: [indexPath], with: .automatic)
+    }
+    
     func showLikeErrorAlert() {
         let alert = UIAlertController(
             title: "Что-то пошло не так",
@@ -98,10 +103,12 @@ extension ImagesListViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        
         configCell(for: imageListCell, with: indexPath)
         
+        let photo = presenter.photoForIndexPath(indexPath)
         imageListCell.delegate = self
+        
+        imageListCell.setIsLiked(photo.isLiked)
         
         return imageListCell
     }
@@ -148,18 +155,6 @@ extension ImagesListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         presenter.heightForRowAt(indexPath: indexPath, tableViewWidth: tableView.bounds.width)
-        //        let photo = photos[indexPath.row]
-        //        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
-        //        let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
-        //
-        //        guard photo.size.width > 0 else {
-        //            return 0
-        //        }
-        //
-        //        let imageWidth = photo.size.width
-        //        let scale = imageViewWidth / imageWidth
-        //        let cellHeight = photo.size.height * scale + imageInsets.top + imageInsets.bottom
-        //        return cellHeight
     }
 }
 
@@ -169,34 +164,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let photo = presenter.photoForIndexPath(indexPath)
         presenter.changeLike(photoId: photo.id, isLike: !photo.isLiked)
-        //        let photo = photos[indexPath.row]
-        //
-        //        UIBlockingProgressHUD.show()
-        //        imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
-        //
-        //            guard let self = self else { return }
-        //
-        //            DispatchQueue.main.async {
-        //                switch result {
-        //                case .success:
-        //                    self.photos = self.imagesListService.photos
-        //                    self.tableView.reloadRows(at: [indexPath], with: .none)
-        //                    UIBlockingProgressHUD.dismiss()
-        //
-        //                case .failure(let error):
-        //                    UIBlockingProgressHUD.dismiss()
-        //                    print("Ошибка при изменении лайка:", error)
-        //
-        //                    let alert = UIAlertController(
-        //                        title: "Что-то пошло не так",
-        //                        message: "Не удалось изменить лайк",
-        //                        preferredStyle: .alert
-        //                    )
-        //                    alert.addAction(UIAlertAction(title: "Ок", style: .default))
-        //                    self.present(alert, animated: true)
-        //                }
-        //            }
-        //        }
+        
     }
 }
 
