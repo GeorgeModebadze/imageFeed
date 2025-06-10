@@ -66,13 +66,12 @@ final class ImageFeedUITests: XCTestCase {
         sleep(2)
         
         let image = app.scrollViews.images.element(boundBy: 0)
-        // Zoom in
-        image.pinch(withScale: 3, velocity: 1) // zoom in
-        // Zoom out
+        
+        image.pinch(withScale: 3, velocity: 1)
         image.pinch(withScale: 0.5, velocity: -1)
         
-        let navBackButtonWhiteButton = app.buttons["Backward"]
-        navBackButtonWhiteButton.tap()
+        let navBackwardButton = app.buttons["Backward"]
+        navBackwardButton.tap()
     }
     
     func testProfile() throws {
