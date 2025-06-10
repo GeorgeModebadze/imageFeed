@@ -86,12 +86,12 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
             preferredStyle: .alert
         )
         
-        alert.addAction(UIAlertAction(title: "Да", style: .destructive) { [weak self] _ in
+        alert.addAction(UIAlertAction(title: "Да", style: .default) { [weak self] _ in
             self?.presenter.performLogout()
             self?.showSplashScreen()
         })
         
-        alert.addAction(UIAlertAction(title: "Нет", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Нет", style: .default))
         
         present(alert, animated: true)
     }
