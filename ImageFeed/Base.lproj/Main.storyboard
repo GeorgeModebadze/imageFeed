@@ -184,6 +184,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qQM-kq-QGf">
                                 <rect key="frame" x="16" y="680" width="361" height="48"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Authenticate"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="Dd0-zL-dZK"/>
                                 </constraints>
@@ -247,6 +248,9 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="xPj-fi-vuT"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <accessibility key="accessibilityConfiguration" identifier="WebViewViewCon">
+                            <bool key="isElement" value="YES"/>
+                        </accessibility>
                         <constraints>
                             <constraint firstItem="AsI-ZH-s2J" firstAttribute="leading" secondItem="hdN-nG-7um" secondAttribute="leading" id="3ti-bo-hpV"/>
                             <constraint firstItem="AsI-ZH-s2J" firstAttribute="bottom" secondItem="hdN-nG-7um" secondAttribute="bottom" id="4Zi-f3-DPh"/>

@@ -154,6 +154,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
             assertionFailure("Не найдена иконка logout_button")
             return
         }
+        logoutButton.accessibilityIdentifier = "logoutButton"
         logoutButton.setImage(logoutImage, for: .normal)
         logoutButton.tintColor = UIColor(named: "ypRed")
         logoutButton.translatesAutoresizingMaskIntoConstraints = false
