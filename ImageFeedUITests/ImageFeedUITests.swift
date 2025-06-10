@@ -19,18 +19,26 @@ final class ImageFeedUITests: XCTestCase {
     func testAuth() throws {
         app.buttons["Authenticate"].tap()
         
-        let webView = app.webViews["WebViewViewCon"]
-        XCTAssertTrue(webView.waitForExistence(timeout: 5), "WebView нет")
+        print("Current app elements hierarchy:", app.debugDescription)
         
-        let loginTextField = webView.descendants(matching: .textField).element
-        XCTAssertTrue(loginTextField.waitForExistence(timeout: 5), "Поля логина нет")
+        let webView = app.otherElements["myWebView"]
+        XCTAssertTrue(webView.waitForExistence(timeout: 20), "WebView нет")
+        
+        print("Current app elements hierarchy:", app.debugDescription)
+        sleep(2)
+        
+//        let loginTextField = webView.descendants(matching: .secureTextField).element
+        let loginTextField = webView.textFields.firstMatch
+//        let loginTextField = webView.textFields["Email address"]
+//        let loginTextField = webView.descendants(matching: .any).matching(NSPredicate(format: "identifier CONTAINS 'Email address' OR placeholderValue CONTAINS 'Email address'")).firstMatch
+        XCTAssertTrue(loginTextField.waitForExistence(timeout: 10), "Поля логина нет")
         
         loginTextField.tap()
         loginTextField.typeText("")
         webView.swipeUp()
         
         let passwordTextField = webView.descendants(matching: .secureTextField).element
-        XCTAssertTrue(passwordTextField.waitForExistence(timeout: 5), "Поля пароля нет")
+        XCTAssertTrue(passwordTextField.waitForExistence(timeout: 10), "Поля пароля нет")
         
         
         passwordTextField.tap()

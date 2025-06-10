@@ -248,7 +248,7 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="xPj-fi-vuT"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <accessibility key="accessibilityConfiguration" identifier="WebViewViewCon">
+                        <accessibility key="accessibilityConfiguration" identifier="myWebView">
                             <bool key="isElement" value="YES"/>
                         </accessibility>
                         <constraints>
