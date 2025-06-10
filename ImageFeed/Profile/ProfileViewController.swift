@@ -1,7 +1,16 @@
 import UIKit
 import SwiftKeychainWrapper
+import Kingfisher
 
-final class ProfileViewController: UIViewController {
+public protocol ProfileViewControllerProtocol: AnyObject {
+    func updateProfileDetails(name: String, loginName: String, bio: String)
+    func updateAvatar()
+    func showLogoutConfirmationAlert()
+    func switchToAuthViewController()
+    func showSplashScreen()
+}
+
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
     
     private let profileImageView = UIImageView()
     private let nameLabel = UILabel()
@@ -10,14 +19,35 @@ final class ProfileViewController: UIViewController {
     private let logoutButton = UIButton()
     
     private let profileService = ProfileService.shared
+    private var presenter: ProfilePresenterProtocol!
     private var profileImageServiceObserver: NSObjectProtocol?
+    
+    // совет от Практикума
+    //    private var presenter: ProfilePresenterProtocol!
+    //
+    //    func configure(_ presenter: ProfilePresenterProtocol) {
+    //        self.presenter = presenter
+    //        presenter.view = self
+    //    }
+    /*
+     Чтобы иметь возможность подменять presenter при тестировании View Controller'ов, создаваемых из Storyboard, можно добавить во View Controller метод configure. Например, так:
+     
+     Тогда для production-кода (то есть кода приложения, а не тестов) нужно будет вызвать метод configure из prepareForSegue при переходе на соответствующий контроллер.
+     А в тестах можно будет подставлять presenter явным вызовом — например, так: sut.configure(presenterSpy).
+     */
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupPresenter()
         setupUI()
         setupConstraints()
         setupObserver()
-        updateProfileDetails()
+        presenter.viewDidLoad()
+    }
+    
+    private func setupPresenter() {
+        presenter = ProfilePresenter()
+        presenter.view = self
     }
     
     private func setupObserver() {
@@ -26,36 +56,64 @@ final class ProfileViewController: UIViewController {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.updateAvatar()
+            self?.presenter.didUpdateAvatar()
         }
-        updateAvatar()
     }
     
-    private func updateAvatar() {
+    func updateProfileDetails(name: String, loginName: String, bio: String) {
+        nameLabel.text = name
+        loginNameLabel.text = loginName
+        descriptionLabel.text = bio
+    }
+    
+    func updateAvatar() {
         ProfileImageService.shared.loadAvatar(
             for: profileImageView,
             placeholder: UIImage(named: "placeholder_avatar")
         )
     }
     
-    deinit {
-        if let observer = profileImageServiceObserver {
-            NotificationCenter.default.removeObserver(observer)
-        }
+    func showLogoutConfirmationAlert() {
+        let alert = UIAlertController(
+            title: "Выход",
+            message: "Уверены, что хотите выйти?",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Да", style: .destructive) { [weak self] _ in
+            self?.presenter.performLogout()
+            self?.showSplashScreen()
+        })
+        
+        alert.addAction(UIAlertAction(title: "Нет", style: .cancel))
+        
+        present(alert, animated: true)
     }
     
-    private func updateProfileDetails() {
-        guard let profile = profileService.profile else {
-            showPlaceholderProfile()
+    func switchToAuthViewController() {
+        guard let window = UIApplication.shared.windows.first else {
+            assertionFailure("Invalid window configuration")
             return
         }
         
-        nameLabel.text = profile.name.isEmpty ? "Имя не указано" : profile.name
-        loginNameLabel.text = profile.loginName
-        descriptionLabel.text = profile.bio ?? "Нет описания"
+        let storyboard = UIStoryboard(name: "Main", bundle: .main)
+        let authVC = storyboard.instantiateViewController(withIdentifier: "AuthViewController")
         
+        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            window.rootViewController = authVC
+        })
     }
     
+    func showSplashScreen() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            assertionFailure("Не удается открыть UIWindow")
+            return
+        }
+        
+        let splashViewController = SplashViewController()
+        window.rootViewController = splashViewController
+    }
     
     private func showPlaceholderProfile() {
         nameLabel.text = "Екатерина Новикова"
@@ -72,6 +130,7 @@ final class ProfileViewController: UIViewController {
         profileImageView.clipsToBounds = true
         profileImageView.contentMode = .scaleAspectFill
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
+        profileImageView.image = UIImage(named: "placeholder_avatar")
         
         nameLabel.textColor = .white
         nameLabel.font = .systemFont(ofSize: 23, weight: .bold)
@@ -128,54 +187,17 @@ final class ProfileViewController: UIViewController {
         showLogoutConfirmationAlert()
     }
     
-    private func showLogoutConfirmationAlert() {
-        let alert = UIAlertController(
-            title: "Выход",
-            message: "Уверены, что хотите выйти?",
-            preferredStyle: .alert
-        )
-        
-        alert.addAction(UIAlertAction(title: "Да", style: .destructive) { [weak self] _ in
-            self?.performLogout()
-            self?.showSplashScreen()
-        })
-        
-        alert.addAction(UIAlertAction(title: "Нет", style: .cancel))
-        
-        present(alert, animated: true)
-    }
     
     private func performLogout() {
         ProfileLogoutService.shared.logout()
         
         switchToAuthViewController()
-        
     }
     
-    private func switchToAuthViewController() {
-        guard let window = UIApplication.shared.windows.first else {
-            assertionFailure("Invalid window configuration")
-            return
-        }
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: .main)
-        let authVC = storyboard.instantiateViewController(withIdentifier: "AuthViewController")
-        
-        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            window.rootViewController = authVC
-        })
-    }
-    
-    func showSplashScreen() {
-            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                  let window = windowScene.windows.first else {
-                assertionFailure("Не удается открыть UIWindow")
-                return
+    deinit {
+            if let observer = profileImageServiceObserver {
+                NotificationCenter.default.removeObserver(observer)
             }
-            
-            let splashViewController = SplashViewController()
-            window.rootViewController = splashViewController
         }
-    
 }
 
