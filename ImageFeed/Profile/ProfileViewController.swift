@@ -22,6 +22,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     private var presenter: ProfilePresenterProtocol!
     private var profileImageServiceObserver: NSObjectProtocol?
     
+    
     // совет от Практикума
     //    private var presenter: ProfilePresenterProtocol!
     //
@@ -35,6 +36,11 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
      Тогда для production-кода (то есть кода приложения, а не тестов) нужно будет вызвать метод configure из prepareForSegue при переходе на соответствующий контроллер.
      А в тестах можно будет подставлять presenter явным вызовом — например, так: sut.configure(presenterSpy).
      */
+    
+    func configure(_ presenter: ProfilePresenterProtocol) {
+        self.presenter = presenter
+        presenter.view = self
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
