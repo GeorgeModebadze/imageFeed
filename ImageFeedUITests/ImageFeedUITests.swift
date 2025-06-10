@@ -9,55 +9,16 @@ import XCTest
 
 final class ImageFeedUITests: XCTestCase {
     
-    private let app = XCUIApplication() // переменная приложения
+    private let app = XCUIApplication()
     
     override func setUpWithError() throws {
         continueAfterFailure = false
         app.launch()
     }
-    
-    //    func testAuth() throws {
-    //        app.buttons["Authenticate"].tap()
-    //
-    //        print("Current app elements hierarchy:", app.debugDescription)
-    //
-    //        let webView = app.otherElements["myWebView"]
-    //        XCTAssertTrue(webView.waitForExistence(timeout: 20), "WebView нет")
-    //
-    //        print("Current app elements hierarchy:", app.debugDescription)
-    //        sleep(2)
-    //
-    //        //        let loginTextField = webView.descendants(matching: .secureTextField).element
-    //        let loginTextField = webView.textFields.firstMatch
-    //        //        let loginTextField = webView.textFields["Email address"]
-    //        //        let loginTextField = webView.descendants(matching: .any).matching(NSPredicate(format: "identifier CONTAINS 'Email address' OR placeholderValue CONTAINS 'Email address'")).firstMatch
-    //        XCTAssertTrue(loginTextField.waitForExistence(timeout: 10), "Поля логина нет")
-    //
-    //        loginTextField.tap()
-    //        loginTextField.typeText("")
-    //        webView.swipeUp()
-    //
-    //        let passwordTextField = webView.descendants(matching: .secureTextField).element
-    //        XCTAssertTrue(passwordTextField.waitForExistence(timeout: 10), "Поля пароля нет")
-    //
-    //
-    //        passwordTextField.tap()
-    //        UIPasteboard.general.string = ""
-    //        passwordTextField.doubleTap()
-    //        app.menuItems["Paste"].tap()
-    //        webView.swipeUp()
-    //
-    //        webView.buttons["Login"].tap()
-    //
-    //        let tablesQuery = app.tables
-    //        let cell = tablesQuery.children(matching: .cell).element(boundBy: 0)
-    //        XCTAssertTrue(cell.waitForExistence(timeout: 5), "Ленты нет")
-    //    }
-    
     func testAuth() throws {
         
         let authButton = app.buttons["Authenticate"]
-        XCTAssertTrue(authButton.waitForExistence(timeout: 3))
+        XCTAssertTrue(authButton.waitForExistence(timeout: 5))
         
         authButton.tap()
         
@@ -65,10 +26,10 @@ final class ImageFeedUITests: XCTestCase {
         XCTAssertTrue(webView.waitForExistence(timeout: 5))
         print("Current app elements hierarchy:", app.debugDescription)
         
-        let loginTextField = webView.descendants(matching: .other).element(boundBy: 0)
-        XCTAssertTrue(loginTextField.waitForExistence(timeout: 5))
-        loginTextField.tap()
-        loginTextField.typeText("")
+        let loginTextLabel = webView.staticTexts["Email address"]
+        XCTAssertTrue(loginTextLabel.waitForExistence(timeout: 5))
+        loginTextLabel.tap()
+        app.typeText("")
         webView.swipeUp()
         
         let passwordsTextField = webView.descendants(matching: .secureTextField).element
