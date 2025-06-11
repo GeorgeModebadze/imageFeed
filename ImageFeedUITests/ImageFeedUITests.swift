@@ -49,9 +49,10 @@ final class ImageFeedUITests: XCTestCase {
     
     func testFeed() throws {
         let tablesQuery = app.tables
-        
+        sleep(2)
         let firstCell = tablesQuery.cells.element(boundBy: 0)
         XCTAssertTrue(firstCell.waitForExistence(timeout: 5), "Первая ячейка не загрузилась")
+        sleep(5)
         firstCell.swipeUp()
         sleep(1)
         

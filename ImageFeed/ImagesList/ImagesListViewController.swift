@@ -47,16 +47,37 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
         return presenter.photoForIndexPath(indexPath)
     }
     
+//    func updateTableViewAnimated(oldCount: Int, newCount: Int) {
+//        //        if oldCount != newCount {
+//        //            DispatchQueue.main.async {
+//        //                self.tableView.performBatchUpdates {
+//        //                    if newCount > oldCount {
+//        //                        let indexPaths = (oldCount..<newCount).map { IndexPath(row: $0, section: 0) }
+//        //                        self.tableView.insertRows(at: indexPaths, with: .automatic)
+//        //                    } else {
+//        //                        let indexPaths = (newCount..<oldCount).map { IndexPath(row: $0, section: 0) }
+//        //                        self.tableView.deleteRows(at: indexPaths, with: .automatic)
+//        //                    }
+//        //                }
+//        //            }
+//        tableView.performBatchUpdates {
+//            let indexPaths = (oldCount..<newCount).map { i in
+//                IndexPath(row: i, section: 0)
+//            }
+//            tableView.insertRows(at: indexPaths, with: .automatic)
+//        } completion: { _ in }
+//    }
     func updateTableViewAnimated(oldCount: Int, newCount: Int) {
-        if oldCount != newCount {
-            tableView.performBatchUpdates {
-                let indexPaths = (oldCount..<newCount).map { i in
-                    IndexPath(row: i, section: 0)
-                }
-                tableView.insertRows(at: indexPaths, with: .automatic)
+        guard oldCount != newCount else { return }
+        
+        DispatchQueue.main.async {
+            self.tableView.performBatchUpdates {
+                let indexPaths = (oldCount..<newCount).map { IndexPath(row: $0, section: 0) }
+                self.tableView.insertRows(at: indexPaths, with: .automatic)
             } completion: { _ in }
         }
     }
+
     
     func reloadRow(at indexPath: IndexPath) {
         tableView.reloadRows(at: [indexPath], with: .automatic)
