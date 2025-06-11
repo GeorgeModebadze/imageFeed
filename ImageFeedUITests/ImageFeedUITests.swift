@@ -25,7 +25,6 @@ final class ImageFeedUITests: XCTestCase {
         
         let webView = app.otherElements["myWebView"]
         XCTAssertTrue(webView.waitForExistence(timeout: 5))
-        print("Current app elements hierarchy:", app.debugDescription)
         
         let loginTextLabel = webView.staticTexts["Email address"]
         XCTAssertTrue(loginTextLabel.waitForExistence(timeout: 5))
@@ -50,12 +49,10 @@ final class ImageFeedUITests: XCTestCase {
     
     func testFeed() throws {
         let tablesQuery = app.tables
-        sleep(2)
         let firstCell = tablesQuery.cells.element(boundBy: 0)
         XCTAssertTrue(firstCell.waitForExistence(timeout: 5), "Первая ячейка не загрузилась")
-        sleep(5)
         firstCell.swipeUp()
-        sleep(1)
+        sleep(2)
         
         let cellToLike = tablesQuery.cells.element(boundBy: 1)
         XCTAssertTrue(cellToLike.waitForExistence(timeout: 5), "Вторая ячейка не найдена")
@@ -65,12 +62,12 @@ final class ImageFeedUITests: XCTestCase {
         sleep(2)
         
         likeButton.tap()
-        sleep(3)
+        sleep(2)
         likeButton.tap()
-        sleep(3)
+        sleep(2)
         
         cellToLike.tap()
-        sleep(1)
+        sleep(2)
         
         let image = app.scrollViews.images.element(boundBy: 0)
         XCTAssertTrue(image.waitForExistence(timeout: 5), "Полноразмерное изображение не найдено")
