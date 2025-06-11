@@ -12,11 +12,18 @@ public protocol ProfileViewControllerProtocol: AnyObject {
 
 final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
     
-    private let profileImageView = UIImageView()
-    private let nameLabel = UILabel()
-    private let loginNameLabel = UILabel()
-    private let descriptionLabel = UILabel()
-    private let logoutButton = UIButton()
+    //    Закомментил для тестирования (убираю приватность)
+    //    private let profileImageView = UIImageView()
+    //    private let nameLabel = UILabel()
+    //    private let loginNameLabel = UILabel()
+    //    private let descriptionLabel = UILabel()
+    //    private let logoutButton = UIButton()
+    
+    let profileImageView = UIImageView()
+    let nameLabel = UILabel()
+    let loginNameLabel = UILabel()
+    let descriptionLabel = UILabel()
+    let logoutButton = UIButton()
     
     private let profileService = ProfileService.shared
     private var presenter: ProfilePresenterProtocol!
@@ -190,9 +197,13 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     }
     
     @objc
-    private func didTapButton() {
+    func didTapButton() {
         showLogoutConfirmationAlert()
     }
+    // убрал приватность для тестов
+    //    private func didTapButton() {
+    //        showLogoutConfirmationAlert()
+    //    }
     
     
     private func performLogout() {
@@ -202,9 +213,9 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     }
     
     deinit {
-            if let observer = profileImageServiceObserver {
-                NotificationCenter.default.removeObserver(observer)
-            }
+        if let observer = profileImageServiceObserver {
+            NotificationCenter.default.removeObserver(observer)
         }
+    }
 }
 

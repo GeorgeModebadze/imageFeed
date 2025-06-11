@@ -23,6 +23,15 @@ final class WebViewViewController: UIViewController, WebViewViewControllerProtoc
     
     private var estimatedProgressObservation: NSKeyValueObservation?
     
+    private lazy var backButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(named: "nav_back_button"), for: .normal)
+        button.tintColor = UIColor(named: "ypBlack")
+        button.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -31,6 +40,31 @@ final class WebViewViewController: UIViewController, WebViewViewControllerProtoc
         
         presenter?.viewDidLoad()
         
+        setupCustomBackButton()
+        
+    }
+    
+    private func setupCustomBackButton() {
+        view.addSubview(backButton)
+        
+        NSLayoutConstraint.activate([
+            backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 9),
+            backButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 8),
+            backButton.widthAnchor.constraint(equalToConstant: 48),
+            backButton.heightAnchor.constraint(equalToConstant: 48)
+        ])
+        
+        view.bringSubviewToFront(backButton)
+    }
+    
+    @objc private func didTapBackButton() {
+        if let navController = navigationController, navController.viewControllers.count > 1 {
+            navController.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
+        
+        delegate?.webViewViewControllerDidCancel(self)
     }
     
     override func viewDidAppear(_ animated: Bool) {
