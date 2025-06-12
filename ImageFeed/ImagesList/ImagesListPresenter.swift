@@ -9,6 +9,10 @@ public protocol ImagesListPresenterProtocol: AnyObject {
     func photoForIndexPath(_ indexPath: IndexPath) -> PhotoModels.Photo
     func countOfPhotos() -> Int
     func heightForRowAt(indexPath: IndexPath, tableViewWidth: CGFloat) -> CGFloat
+    
+    func thumbImageURL(for photo: PhotoModels.Photo) -> URL?
+    func formatPhotoDate(_ photo: PhotoModels.Photo) -> String
+    
 }
 
 final class ImagesListPresenter: ImagesListPresenterProtocol {
@@ -17,6 +21,14 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     private var photos: [PhotoModels.Photo] = []
     private var observer: NSObjectProtocol?
     private let dateFormatter = ISO8601DateFormatter()
+    
+    private lazy var DisplayDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        formatter.timeStyle = .none
+        formatter.locale = Locale(identifier: "ru_RU")
+        return formatter
+    }()
     
     init(imagesListService: ImagesListServiceProtocol = ImagesListService.shared) {
         self.imagesListService = imagesListService
@@ -39,12 +51,17 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         }
     }
     
-    //    private func updatePhotos() {
-    //        let oldCount = photos.count
-    //        photos = imagesListService.photos
-    //        let newCount = photos.count
-    //        view?.updateTableViewAnimated(oldCount: oldCount, newCount: newCount)
-    //    }
+    func formatPhotoDate(_ photo: PhotoModels.Photo) -> String {
+            do {
+                let date = try photo.requireCreatedAt()
+                return DisplayDateFormatter.string(from: date)
+            } catch PhotoModels.Error.missingCreationDate {
+                return ""
+            } catch {
+                return ""
+            }
+        }
+    
     private func updatePhotos() {
         DispatchQueue.main.async {
             let oldCount = self.photos.count
@@ -124,5 +141,11 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         if let observer = observer {
             NotificationCenter.default.removeObserver(observer)
         }
+    }
+}
+
+extension ImagesListPresenter {
+    func thumbImageURL(for photo: PhotoModels.Photo) -> URL? {
+        return URL(string: photo.thumbImageURL)
     }
 }

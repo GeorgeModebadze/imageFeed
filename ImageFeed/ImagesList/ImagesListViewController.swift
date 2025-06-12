@@ -14,23 +14,22 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
     
     private let imagesListService = ImagesListService.shared
     private var observer: NSObjectProtocol?
-//    private var presenter: ImagesListPresenterProtocol!
-    // для теста доступ изменен
     var presenter: ImagesListPresenterProtocol!
     
-    private lazy var dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.timeStyle = .none
-        formatter.locale = Locale(identifier: "ru_RU")
-        return formatter
-    }()
+//    private lazy var dateFormatter: DateFormatter = {
+//        let formatter = DateFormatter()
+//        formatter.dateStyle = .long
+//        formatter.timeStyle = .none
+//        formatter.locale = Locale(identifier: "ru_RU")
+//        return formatter
+//    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupTableView()
-        setupPresenter()
+//        setupPresenter()
+        presenter?.viewDidLoad()
     }
     
     
@@ -39,11 +38,11 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
     }
     
-    private func setupPresenter() {
-            presenter = ImagesListPresenter()
-            presenter.view = self
-            presenter.viewDidLoad()
-        }
+//    private func setupPresenter() {
+//            presenter = ImagesListPresenter()
+//            presenter.view = self
+//            presenter.viewDidLoad()
+//        }
     
     func photoForIndexPath(_ indexPath: IndexPath) -> PhotoModels.Photo {
         return presenter.photoForIndexPath(indexPath)
@@ -157,7 +156,7 @@ extension ImagesListViewController {
         cell.cellImage.kf.cancelDownloadTask()
         cell.cellImage.kf.indicatorType = .activity
         
-        if let url = URL(string: photo.thumbImageURL) {
+        if let url = presenter.thumbImageURL(for: photo) {
             cell.cellImage.kf.setImage(
                 with: url,
                 placeholder: UIImage(named: "stub"),
@@ -165,14 +164,9 @@ extension ImagesListViewController {
             )
         }
         
-        do {
-            let date = try photo.requireCreatedAt()
-            cell.dateLabel.text = dateFormatter.string(from: date)
-        } catch {
-            cell.dateLabel.text = ""
-        }
+        cell.dateLabel.text = presenter.formatPhotoDate(photo)
         
-        cell.setIsLiked(photo.isLiked)
+//        cell.setIsLiked(photo.isLiked)
     }
 }
 

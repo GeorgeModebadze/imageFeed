@@ -13,26 +13,37 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     private let profileService: ProfileServiceProtocol
     private let profileImageService: ProfileImageServiceProtocol
     private let logoutService: ProfileLogoutServiceProtocol
-    private let tokenStorage: OAuth2TokenStorageProtocol
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     init(
         profileService: ProfileServiceProtocol = ProfileService.shared,
         profileImageService: ProfileImageServiceProtocol = ProfileImageService.shared,
-        logoutService: ProfileLogoutServiceProtocol = ProfileLogoutService.shared,
-        tokenStorage: OAuth2TokenStorageProtocol = OAuth2TokenStorage.shared
+        logoutService: ProfileLogoutServiceProtocol = ProfileLogoutService.shared
+        //        tokenStorage: OAuth2TokenStorageProtocol = OAuth2TokenStorage.shared
     ) {
         self.profileService = profileService
         self.profileImageService = profileImageService
         self.logoutService = logoutService
-        self.tokenStorage = tokenStorage
+        setupObserver()
+    }
+    
+    private func setupObserver() {
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: ProfileImageService.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.didUpdateAvatar()
+        }
     }
     
     func viewDidLoad() {
         updateProfileDetails()
+//        loadAvatar()
     }
     
     func didUpdateAvatar() {
-        view?.updateAvatar()
+//        loadAvatar()
     }
     
     func performLogout() {
@@ -40,6 +51,21 @@ final class ProfilePresenter: ProfilePresenterProtocol {
         view?.switchToAuthViewController()
         view?.showSplashScreen()
     }
+    
+    
+//    func updateAvatar() {
+//        guard let profile = profileService.profile else { return }
+//        
+//        profileImageService.fetchProfileImageURL(username: profile.username) { [weak self] result in
+//            switch result {
+//            case .success(let avatarURL):
+//                self?.view?.updateAvatar(url: avatarURL)
+//            case .failure(let error):
+//                print("Ошибка загрузки URL аватарки: \(error)")
+//                self?.view?.updateAvatar(url: nil)
+//            }
+//        }
+//    }
     
     private func updateProfileDetails() {
         guard let profile = profileService.profile else {
@@ -65,5 +91,11 @@ final class ProfilePresenter: ProfilePresenterProtocol {
                     print("Ошибка загрузки URL аватарки: \(error)")
                 }
             }
+    }
+    
+    deinit {
+        if let observer = profileImageServiceObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
 }

@@ -4,7 +4,7 @@ import Kingfisher
 
 public protocol ProfileViewControllerProtocol: AnyObject {
     func updateProfileDetails(name: String, loginName: String, bio: String)
-    func updateAvatar()
+//    func updateAvatar()
     func showLogoutConfirmationAlert()
     func switchToAuthViewController()
     func showSplashScreen()
@@ -12,81 +12,37 @@ public protocol ProfileViewControllerProtocol: AnyObject {
 
 final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
     
-    //    Закомментил для тестирования (убираю приватность)
-    //    private let profileImageView = UIImageView()
-    //    private let nameLabel = UILabel()
-    //    private let loginNameLabel = UILabel()
-    //    private let descriptionLabel = UILabel()
-    //    private let logoutButton = UIButton()
+//        Закомментил для тестирования (убираю приватность)
+        private let profileImageView = UIImageView()
+        private let nameLabel = UILabel()
+        private let loginNameLabel = UILabel()
+        private let descriptionLabel = UILabel()
+        private let logoutButton = UIButton()
     
-    let profileImageView = UIImageView()
-    let nameLabel = UILabel()
-    let loginNameLabel = UILabel()
-    let descriptionLabel = UILabel()
-    let logoutButton = UIButton()
+//    let profileImageView = UIImageView()
+//    let nameLabel = UILabel()
+//    let loginNameLabel = UILabel()
+//    let descriptionLabel = UILabel()
+//    let logoutButton = UIButton()
     
-    private let profileService = ProfileService.shared
-//    private var presenter: ProfilePresenterProtocol!
-    //для теста открыл переменную
-    var presenter: ProfilePresenterProtocol!
+    var presenter: ProfilePresenterProtocol?
     
-    private var profileImageServiceObserver: NSObjectProtocol?
-    
-    
-    // совет от Практикума
-    //    private var presenter: ProfilePresenterProtocol!
-    //
-    //    func configure(_ presenter: ProfilePresenterProtocol) {
-    //        self.presenter = presenter
-    //        presenter.view = self
-    //    }
-    /*
-     Чтобы иметь возможность подменять presenter при тестировании View Controller'ов, создаваемых из Storyboard, можно добавить во View Controller метод configure. Например, так:
-     
-     Тогда для production-кода (то есть кода приложения, а не тестов) нужно будет вызвать метод configure из prepareForSegue при переходе на соответствующий контроллер.
-     А в тестах можно будет подставлять presenter явным вызовом — например, так: sut.configure(presenterSpy).
-     */
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+        setupConstraints()
+        presenter?.viewDidLoad()
+    }
     
     func configure(_ presenter: ProfilePresenterProtocol) {
         self.presenter = presenter
         presenter.view = self
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupPresenter()
-        setupUI()
-        setupConstraints()
-        setupObserver()
-        presenter.viewDidLoad()
-    }
-    
-    private func setupPresenter() {
-        presenter = ProfilePresenter()
-        presenter.view = self
-    }
-    
-    private func setupObserver() {
-        profileImageServiceObserver = NotificationCenter.default.addObserver(
-            forName: ProfileImageService.didChangeNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.presenter.didUpdateAvatar()
-        }
-    }
-    
     func updateProfileDetails(name: String, loginName: String, bio: String) {
         nameLabel.text = name
         loginNameLabel.text = loginName
         descriptionLabel.text = bio
-    }
-    
-    func updateAvatar() {
-        ProfileImageService.shared.loadAvatar(
-            for: profileImageView,
-            placeholder: UIImage(named: "placeholder_avatar")
-        )
     }
     
     func showLogoutConfirmationAlert() {
@@ -97,7 +53,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         )
         
         alert.addAction(UIAlertAction(title: "Да", style: .default) { [weak self] _ in
-            self?.presenter.performLogout()
+            self?.presenter?.performLogout()
             self?.showSplashScreen()
         })
         
@@ -203,22 +159,11 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     func didTapButton() {
         showLogoutConfirmationAlert()
     }
-    // убрал приватность для тестов
-    //    private func didTapButton() {
-    //        showLogoutConfirmationAlert()
-    //    }
-    
     
     private func performLogout() {
-        ProfileLogoutService.shared.logout()
+//        ProfileLogoutService.shared.logout()
         
         switchToAuthViewController()
-    }
-    
-    deinit {
-        if let observer = profileImageServiceObserver {
-            NotificationCenter.default.removeObserver(observer)
-        }
     }
 }
 
