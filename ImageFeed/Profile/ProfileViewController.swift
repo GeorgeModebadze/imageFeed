@@ -26,7 +26,10 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     let logoutButton = UIButton()
     
     private let profileService = ProfileService.shared
-    private var presenter: ProfilePresenterProtocol!
+//    private var presenter: ProfilePresenterProtocol!
+    //для теста открыл переменную
+    var presenter: ProfilePresenterProtocol!
+    
     private var profileImageServiceObserver: NSObjectProtocol?
     
     
