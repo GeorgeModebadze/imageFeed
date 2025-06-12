@@ -5,7 +5,17 @@ struct ProfileImage: Codable {
     let small: String
 }
 
-final class ProfileImageService {
+protocol ProfileImageServiceProtocol: AnyObject {
+    var avatarURL: String? { get }
+    
+    func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void)
+    func loadAvatar(for imageView: UIImageView, placeholder: UIImage?)
+    func cleanAvatarURL()
+    
+    static var didChangeNotification: Notification.Name { get }
+}
+
+final class ProfileImageService: ProfileImageServiceProtocol {
     static let shared = ProfileImageService()
     private init() {}
     
@@ -19,7 +29,6 @@ final class ProfileImageService {
     }
     
     static let didChangeNotification = Notification.Name("ProfileImageServiceDidChange")
-    
     
     func loadAvatar(for imageView: UIImageView, placeholder: UIImage? = nil) {
         guard let avatarURLString = avatarURL,

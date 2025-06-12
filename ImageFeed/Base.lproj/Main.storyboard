@@ -127,6 +127,7 @@
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h54-c6-xlu">
                                 <rect key="frame" x="8" y="9" width="48" height="48"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Backward"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="K0g-kN-n0X"/>
                                     <constraint firstAttribute="width" constant="48" id="y0t-rK-MBq"/>
@@ -184,6 +185,7 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qQM-kq-QGf">
                                 <rect key="frame" x="16" y="680" width="361" height="48"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Authenticate"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="Dd0-zL-dZK"/>
                                 </constraints>
@@ -200,7 +202,7 @@
                                     <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <segue destination="Ika-YK-iFi" kind="presentation" identifier="ShowWebView" modalPresentationStyle="fullScreen" id="mjh-rk-oZt"/>
+                                    <segue destination="Ika-YK-iFi" kind="show" identifier="ShowWebView" id="mjh-rk-oZt"/>
                                 </connections>
                             </button>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="auth_screen_logo" translatesAutoresizingMaskIntoConstraints="NO" id="C4J-ES-FHX">
@@ -227,13 +229,13 @@
         <!--Web View View Controller-->
         <scene sceneID="fKI-1e-7D3">
             <objects>
-                <viewController id="Ika-YK-iFi" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WebViewViewController" id="Ika-YK-iFi" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hdN-nG-7um">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AsI-ZH-s2J">
-                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <rect key="frame" x="0.0" y="103" width="393" height="749"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
@@ -241,12 +243,15 @@
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="oud-EA-AGX">
-                                <rect key="frame" x="0.0" y="0.0" width="393" height="4"/>
+                                <rect key="frame" x="0.0" y="103" width="393" height="4"/>
                                 <color key="progressTintColor" name="ypBlack"/>
                             </progressView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="xPj-fi-vuT"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <accessibility key="accessibilityConfiguration" identifier="myWebView">
+                            <bool key="isElement" value="YES"/>
+                        </accessibility>
                         <constraints>
                             <constraint firstItem="AsI-ZH-s2J" firstAttribute="leading" secondItem="hdN-nG-7um" secondAttribute="leading" id="3ti-bo-hpV"/>
                             <constraint firstItem="AsI-ZH-s2J" firstAttribute="bottom" secondItem="hdN-nG-7um" secondAttribute="bottom" id="4Zi-f3-DPh"/>
