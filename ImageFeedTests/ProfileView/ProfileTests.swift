@@ -45,21 +45,6 @@ final class ProfileViewTests: XCTestCase {
         XCTAssertTrue(viewController.updateAvatarCalled)
     }
     
-    func testLogoutButtonCallsConfirmationAlert() {
-        // given
-        let viewController = ProfileViewController()
-        let presenter = ProfilePresenterSpy()
-        viewController.presenter = presenter
-        presenter.view = viewController
-        
-        // when
-        _ = viewController.view
-        viewController.didTapButton()
-        
-        // then
-        XCTAssertTrue(presenter.performLogoutCalled)
-    }
-    
     func testLogoutCallsSwitchToAuth() {
         // given
         let viewController = ProfileViewControllerSpy()

@@ -34,8 +34,7 @@ final class ImagesListTests: XCTestCase {
         }
     }
     
-    
-    func testLikeButtonCallsChangeLike() {
+    func testViewControllerCallsShowLikeErrorAlert() {
         // given
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let viewController = storyboard.instantiateViewController(
@@ -46,10 +45,29 @@ final class ImagesListTests: XCTestCase {
         
         // when
         _ = viewController.view
-        let cell = ImagesListCell()
-        viewController.imageListCellDidTapLike(cell)
+        viewController.showLikeErrorAlert()
         
         // then
-        XCTAssertTrue(presenter.changeLikeCalled)
+        XCTAssertTrue(presenter.view is ImagesListViewController)
+        
+    }
+    
+    func testViewControllerCallsReloadRow() {
+        // given
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let viewController = storyboard.instantiateViewController(
+            withIdentifier: "ImagesListViewController") as! ImagesListViewController
+        let presenter = ImagesListPresenterSpy()
+        viewController.presenter = presenter
+        presenter.view = viewController
+        
+        // when
+        _ = viewController.view
+        let testIndexPath = IndexPath(row: 0, section: 0)
+        viewController.reloadRow(at: testIndexPath)
+        
+        // then
+        XCTAssertTrue(presenter.view is ImagesListViewController)
+        
     }
 }

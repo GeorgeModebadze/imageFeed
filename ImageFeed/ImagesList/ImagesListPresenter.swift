@@ -24,9 +24,9 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     
     private lazy var DisplayDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.timeStyle = .none
+        formatter.calendar = Calendar(identifier: .gregorian)
         formatter.locale = Locale(identifier: "ru_RU")
+        formatter.dateFormat = "d MMMM yyyy"
         return formatter
     }()
     
@@ -52,15 +52,17 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     }
     
     func formatPhotoDate(_ photo: PhotoModels.Photo) -> String {
-            do {
-                let date = try photo.requireCreatedAt()
-                return DisplayDateFormatter.string(from: date)
-            } catch PhotoModels.Error.missingCreationDate {
-                return ""
-            } catch {
-                return ""
-            }
+        do {
+            let date = try photo.requireCreatedAt()
+            print("Formatting date:", date)
+            print("Formatter locale:", DisplayDateFormatter.locale?.identifier ?? "nil")
+            return DisplayDateFormatter.string(from: date)
+        } catch PhotoModels.Error.missingCreationDate {
+            return ""
+        } catch {
+            return ""
         }
+    }
     
     private func updatePhotos() {
         DispatchQueue.main.async {
@@ -76,7 +78,14 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     }
     
     func changeLike(photoId: String, isLike: Bool) {
+        
+        if let index = photos.firstIndex(where: { $0.id == photoId }) {
+            photos[index].isLiked = isLike
+            view?.reloadRow(at: IndexPath(row: index, section: 0))
+        }
+        
         UIBlockingProgressHUD.show()
+        
         imagesListService.changeLike(photoId: photoId, isLike: isLike) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
             
@@ -85,24 +94,17 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
             switch result {
             case .success:
                 print("Like changed successfully")
-                //                self.updatePhotos()
-                if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
-                    self.view?.reloadRow(at: IndexPath(row: index, section: 0))
-                }
             case .failure:
                 print("Like change failed")
+                if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
+                    self.photos[index].isLiked = !isLike
+                    self.view?.reloadRow(at: IndexPath(row: index, section: 0))
+                }
                 self.view?.showLikeErrorAlert()
             }
         }
     }
     
-//    func photoForIndexPath(_ indexPath: IndexPath) -> PhotoModels.Photo {
-//        guard indexPath.row < photos.count else {
-//            fatalError("Index out of range")
-//            
-//        }
-//        return photos[indexPath.row]
-//    }
     func photoForIndexPath(_ indexPath: IndexPath) -> PhotoModels.Photo {
         guard indexPath.row < photos.count else {
             return PhotoModels.Photo(

@@ -30,7 +30,6 @@ final class ProfileImageService: ProfileImageServiceProtocol {
     
     static let didChangeNotification = Notification.Name("ProfileImageServiceDidChange")
     
-    
     func loadAvatar(for imageView: UIImageView, placeholder: UIImage? = nil) {
         guard let avatarURLString = avatarURL,
               let avatarURL = URL(string: avatarURLString) else {

@@ -4,7 +4,7 @@ import Kingfisher
 
 public protocol ProfileViewControllerProtocol: AnyObject {
     func updateProfileDetails(name: String, loginName: String, bio: String)
-//    func updateAvatar()
+    func updateAvatar()
     func showLogoutConfirmationAlert()
     func switchToAuthViewController()
     func showSplashScreen()
@@ -12,18 +12,11 @@ public protocol ProfileViewControllerProtocol: AnyObject {
 
 final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
     
-//        Закомментил для тестирования (убираю приватность)
-        private let profileImageView = UIImageView()
-        private let nameLabel = UILabel()
-        private let loginNameLabel = UILabel()
-        private let descriptionLabel = UILabel()
-        private let logoutButton = UIButton()
-    
-//    let profileImageView = UIImageView()
-//    let nameLabel = UILabel()
-//    let loginNameLabel = UILabel()
-//    let descriptionLabel = UILabel()
-//    let logoutButton = UIButton()
+    private let profileImageView = UIImageView()
+    private let nameLabel = UILabel()
+    private let loginNameLabel = UILabel()
+    private let descriptionLabel = UILabel()
+    private let logoutButton = UIButton()
     
     var presenter: ProfilePresenterProtocol?
     
@@ -37,6 +30,13 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     func configure(_ presenter: ProfilePresenterProtocol) {
         self.presenter = presenter
         presenter.view = self
+    }
+    
+    func updateAvatar() {
+        ProfileImageService.shared.loadAvatar(
+            for: profileImageView,
+            placeholder: UIImage(named: "placeholder_avatar")
+        )
     }
     
     func updateProfileDetails(name: String, loginName: String, bio: String) {
@@ -161,8 +161,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     }
     
     private func performLogout() {
-//        ProfileLogoutService.shared.logout()
-        
         switchToAuthViewController()
     }
 }

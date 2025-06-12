@@ -19,7 +19,6 @@ final class ProfilePresenter: ProfilePresenterProtocol {
         profileService: ProfileServiceProtocol = ProfileService.shared,
         profileImageService: ProfileImageServiceProtocol = ProfileImageService.shared,
         logoutService: ProfileLogoutServiceProtocol = ProfileLogoutService.shared
-        //        tokenStorage: OAuth2TokenStorageProtocol = OAuth2TokenStorage.shared
     ) {
         self.profileService = profileService
         self.profileImageService = profileImageService
@@ -39,11 +38,10 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     
     func viewDidLoad() {
         updateProfileDetails()
-//        loadAvatar()
     }
     
     func didUpdateAvatar() {
-//        loadAvatar()
+        view?.updateAvatar()
     }
     
     func performLogout() {
@@ -51,21 +49,6 @@ final class ProfilePresenter: ProfilePresenterProtocol {
         view?.switchToAuthViewController()
         view?.showSplashScreen()
     }
-    
-    
-//    func updateAvatar() {
-//        guard let profile = profileService.profile else { return }
-//        
-//        profileImageService.fetchProfileImageURL(username: profile.username) { [weak self] result in
-//            switch result {
-//            case .success(let avatarURL):
-//                self?.view?.updateAvatar(url: avatarURL)
-//            case .failure(let error):
-//                print("Ошибка загрузки URL аватарки: \(error)")
-//                self?.view?.updateAvatar(url: nil)
-//            }
-//        }
-//    }
     
     private func updateProfileDetails() {
         guard let profile = profileService.profile else {

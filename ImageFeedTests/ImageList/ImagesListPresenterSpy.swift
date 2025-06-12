@@ -2,6 +2,9 @@ import Foundation
 @testable import ImageFeed
 
 final class ImagesListPresenterSpy: ImagesListPresenterProtocol {
+    func thumbImageURL(for photo: ImageFeed.PhotoModels.Photo) -> URL? { nil }
+    func formatPhotoDate(_ photo: ImageFeed.PhotoModels.Photo) -> String { "" }
+    
     weak var view: ImagesListViewControllerProtocol?
     var viewDidLoadCalled = false
     var fetchPhotosNextPageCalled = false

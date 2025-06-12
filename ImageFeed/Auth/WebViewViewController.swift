@@ -36,7 +36,7 @@ final class WebViewViewController: UIViewController, WebViewViewControllerProtoc
         super.viewDidLoad()
         
         webView.navigationDelegate = self
-        webView.accessibilityIdentifier = "authWebView" // Для UIтеста
+        webView.accessibilityIdentifier = "authWebView"
         
         presenter?.viewDidLoad()
         
