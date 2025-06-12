@@ -14,7 +14,9 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
     
     private let imagesListService = ImagesListService.shared
     private var observer: NSObjectProtocol?
-    private var presenter: ImagesListPresenterProtocol!
+//    private var presenter: ImagesListPresenterProtocol!
+    // для теста доступ изменен
+    var presenter: ImagesListPresenterProtocol!
     
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()

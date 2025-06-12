@@ -53,8 +53,8 @@ final class ProfileViewTests: XCTestCase {
         presenter.view = viewController
         
         // when
-        _ = viewController.view // чтобы вызвать viewDidLoad
-        viewController.didTapButton() // имитируем нажатие кнопки
+        _ = viewController.view
+        viewController.didTapButton()
         
         // then
         XCTAssertTrue(presenter.performLogoutCalled)
