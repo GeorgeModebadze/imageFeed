@@ -1,4 +1,3 @@
-import Foundation
 import UIKit
 
 public protocol ProfilePresenterProtocol: AnyObject {
@@ -67,13 +66,13 @@ final class ProfilePresenter: ProfilePresenterProtocol {
         )
         
         profileImageService.fetchProfileImageURL(username: profile.username) { result in
-                switch result {
-                case .success:
-                    break
-                case .failure(let error):
-                    print("Ошибка загрузки URL аватарки: \(error)")
-                }
+            switch result {
+            case .success:
+                break
+            case .failure(let error):
+                print("Ошибка загрузки URL аватарки: \(error)")
             }
+        }
     }
     
     deinit {

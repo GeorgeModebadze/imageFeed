@@ -1,4 +1,3 @@
-import Foundation
 import UIKit
 
 public protocol ImagesListPresenterProtocol: AnyObject {
@@ -22,7 +21,7 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     private var observer: NSObjectProtocol?
     private let dateFormatter = ISO8601DateFormatter()
     
-    private lazy var DisplayDateFormatter: DateFormatter = {
+    private lazy var displayDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)
         formatter.locale = Locale(identifier: "ru_RU")
@@ -55,8 +54,8 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         do {
             let date = try photo.requireCreatedAt()
             print("Formatting date:", date)
-            print("Formatter locale:", DisplayDateFormatter.locale?.identifier ?? "nil")
-            return DisplayDateFormatter.string(from: date)
+            print("Formatter locale:", displayDateFormatter.locale?.identifier ?? "nil")
+            return displayDateFormatter.string(from: date)
         } catch PhotoModels.Error.missingCreationDate {
             return ""
         } catch {
