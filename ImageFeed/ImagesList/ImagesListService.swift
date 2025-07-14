@@ -1,11 +1,19 @@
 import UIKit
 
+protocol ImagesListServiceProtocol: AnyObject {
+    var photos: [PhotoModels.Photo] { get }
+    func fetchPhotosNextPage()
+    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void)
+}
+
+extension ImagesListService: ImagesListServiceProtocol {}
+
 final class ImagesListService {
     
     static let shared = ImagesListService()
     private init() {}
     
-    private(set) var photos: [Photo] = []
+    private(set) var photos: [PhotoModels.Photo] = []
     
     func cleanPhotos() {
         photos = []
@@ -51,7 +59,7 @@ final class ImagesListService {
                 let photoResults = try decoder.decode([PhotoResult].self, from: data)
                 
                 let newPhotos = photoResults.map { result in
-                    Photo(
+                    PhotoModels.Photo(
                         id: result.id,
                         size: CGSize(width: result.width, height: result.height),
                         createdAt: self.dateFormatter.date(from: result.createdAt),
@@ -123,7 +131,7 @@ final class ImagesListService {
             if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
                 let photo = self.photos[index]
                 
-                let newPhoto = Photo(
+                let newPhoto = PhotoModels.Photo(
                     id: photo.id,
                     size: photo.size,
                     createdAt: photo.createdAt,
@@ -159,4 +167,3 @@ extension Array {
         return newArray
     }
 }
-

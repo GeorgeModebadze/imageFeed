@@ -22,6 +22,25 @@ struct Profile {
     }
 }
 
+protocol ProfileServiceProtocol: AnyObject {
+    var profile: Profile? { get }
+    
+    func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void)
+    func cleanProfile()
+    
+    func fetchProfile(completion: @escaping (Result<Profile, Error>) -> Void)
+}
+
+extension ProfileService: ProfileServiceProtocol {
+    func fetchProfile(completion: @escaping (Result<Profile, Error>) -> Void) {
+        guard let token = OAuth2TokenStorage.shared.token else {
+            completion(.failure(NetworkError.urlSessionError))
+            return
+        }
+        fetchProfile(token, completion: completion)
+    }
+}
+
 final class ProfileService {
     static let shared = ProfileService()
     private var task: URLSessionTask?

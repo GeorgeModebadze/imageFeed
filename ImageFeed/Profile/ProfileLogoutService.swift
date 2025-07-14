@@ -2,6 +2,18 @@ import Foundation
 import WebKit
 import SwiftKeychainWrapper
 
+protocol ProfileLogoutServiceProtocol: AnyObject {
+    func logout()
+    
+    var isLoggedIn: Bool { get }
+}
+
+extension ProfileLogoutService: ProfileLogoutServiceProtocol {
+    var isLoggedIn: Bool {
+        return OAuth2TokenStorage.shared.token != nil
+    }
+}
+
 final class ProfileLogoutService {
     static let shared = ProfileLogoutService()
     
